@@ -1,0 +1,66 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.card {
+  padding: 2em;
+  flex-direction: column;
+  width: 1000px;
+  height: 500px;
+  position: relative;
+  margin: 0 auto;
+
+}
+
+.left_card {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.right_card {
+  width: 50%;
+  height: 100%;
+  left: 50%;
+  position: absolute;
+  align-content: center;
+  justify-content: center;
+}
+
+.boton_empezar {
+  background-color: #ea8c2f;
+  border-color: #ea8c2f;
+  border-radius: 20px;
+  text-decoration: solid;
+  font: bold;
+}
+
+.boton_empezar:hover {
+  border-color: #003049;
+  outline: none;
+  border-width: 2px;
+}
+
+.boton_empezar:active {
+  border-color: #003049;
+  outline: none;
+}
+
+.boton_empezar:focus{
+  outline: none;
+}
+
+h2 {
+  text-align: left;
+}
+
+.foto {
+  max-width: 450px;
+}
