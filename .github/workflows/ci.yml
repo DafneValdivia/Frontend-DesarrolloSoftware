@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+# Define cuándo ejecutar el pipeline (en cada push o PR a la rama main)
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: ['16', '18']
+
+    steps:
+      # Revisa tu código desde el repositorio
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Configura Node.js con la versión especificada
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Instala las dependencias utilizando Yarn
+      - name: Install dependencies
+        run: yarn install
+
+      # Corre tus pruebas
+      - name: Run tests
+        run: yarn test
+
+      # Opcional: Ejecuta el linter para verificar el estilo del código
+      - name: Run linter
+        run: yarn lint
