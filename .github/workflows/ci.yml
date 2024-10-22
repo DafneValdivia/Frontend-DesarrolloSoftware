@@ -10,11 +10,11 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest  # Solo ejecuta en Linux
+
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: ['18', '20']  # Solo versiones compatibles
+        node-version: ['18', '20']
 
     steps:
       - name: Checkout code
