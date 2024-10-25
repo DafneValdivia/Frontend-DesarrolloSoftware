@@ -1,18 +1,19 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
+} */
 
 .card {
   padding: 2em;
   flex-direction: column;
-  width: 1000px;
+  width: 80%;
   height: 500px;
   position: relative;
   margin: 0 auto;
-
+  text-align: center;
+  margin-top: 10%;
 }
 
 .left_card {
@@ -40,6 +41,12 @@
   border-radius: 20px;
   text-decoration: solid;
   font: bold;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-family: inherit;
+  color: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.25s;
 }
 
 .boton_empezar:hover {
