@@ -6,6 +6,11 @@
     cursor: pointer; 
     background-color: #f9f9f9;
     margin-bottom: 1%;
+    box-sizing: border-box;
+}
+
+.group-card:hover {
+    background-color: #002f4926;
 }
 
 .group-name {
