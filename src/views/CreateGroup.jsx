@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import "./CreateGroup.css";
+import AddMember from "./../assets/agregarMember.png";
 
 export default function CreateGroup() {
 
     const [groupName, setGroupName] = useState("");
     const [memberEmail, setMemberEmail] = useState("");
     const [members, setMembers] = useState([]);
+    // pedir contactos para poder ir revisandolos
 
     const handleAddMember = () => { // aca sería bueno poder confirmar el nombre de usuario o correo a medida que se va escribiendo
         if (memberEmail) {
@@ -26,26 +28,28 @@ export default function CreateGroup() {
     return (
         <div>
             <div className="create-group-container">
-                <h2>Crear Nuevo Grupo</h2>
+                <h2>CREAR NUEVO GRUPO</h2>
                 <input
                     type="text"
                     placeholder="Nombre del Grupo"
                     value={groupName}
                     onChange={(e) => setGroupName(e.target.value)}
                 />
-                <div className="member-input">
-                    <input
-                    type="email"
-                    placeholder="Usuario / Mail Integrante"
-                    value={memberEmail}
-                    onChange={(e) => setMemberEmail(e.target.value)}
-                    />
-                    <button type="button" onClick={handleAddMember}>
-                    + Añadir integrante
-                    </button>
+                <input
+                type="email"
+                placeholder="Usuario / Mail Integrante"
+                value={memberEmail}
+                onChange={(e) => setMemberEmail(e.target.value)}
+                />
+                <div id="add-member-div">
+                    <p>Añadir Integrante</p>
+                    <button className="add-member-button"><img src={AddMember} onClick={handleAddMember} /></button>
                 </div>
-                <button className="create-group-button" onClick={handleCreateGroup}>
-                    Crear Grupo
+                <div className="member-added">
+
+                </div>
+                <button id="create-group-button" onClick={handleCreateGroup}>
+                    CREAR GRUPO
                 </button>
             </div>
         </div>
