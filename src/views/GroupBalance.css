@@ -37,3 +37,17 @@ th, td {
     background-color: #f6ce7e;
     color: #003049;
 }
+
+.filters{
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    color: #003049; /* Cambiado a negro para que sea visible */
+    border-radius: none;
+    width: 100%;
+    justify-content: center;
+}
+
+.filter{
+    padding-left: 10px;
+}
