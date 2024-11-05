@@ -19,11 +19,11 @@
   }
   
   input {
-    width: 100%;
+    width: 95%;
     padding: 10px;
-    margin-bottom: 10px;
     border: 1px solid rgba(0, 48, 73, 0.7);
     border-radius: 4px;
+    color: #003049;
   }
   
   
@@ -45,6 +45,7 @@
     width: 250px;
     font-size: 18px;
     font-weight: 600;
+    margin-top: 10px;
   }
   
   #create-group-button:hover{
@@ -56,7 +57,7 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    justify-content: flex-end;
+    align-items: center;
   }
 
   .add-member-button:hover{
@@ -67,8 +68,74 @@
     font-size: 13px;
     color: black;
     font-weight: 500;
+    padding-left: 10px;
   }
 
   img{
-    width: 30px;
+    width: 25px;
   }
+
+
+.add-member-button {
+    margin-left: 1px;
+}
+
+.member-added {
+    width: 100%;
+}
+
+h3 {
+    font-weight: bold;
+    font-size: small;
+    margin: 13px 0px 0px 0px;
+}
+
+.show-members {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+ul {
+   justify-content: flex-start;
+   width: 95%;
+   padding: 0%;
+   list-style: none;
+   margin: 0%;
+
+
+}
+li {
+    background-color: #f3f3f3;
+    width: 80%;
+    padding: 8px;
+    font-size: 13px;
+    color: #003049;
+    font-weight: 480;
+}
+
+li:hover {
+    background-color: #003049;
+    color: #ffffff;
+}
+
+.suggestion-email {
+    color: gray; /* Cambia el color del correo electrónico */
+    font-style: italic; /* Aplica cursiva al correo */
+    font-size: 0.9em;
+}
+
+.X-button {
+    background-color: #d62828;
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 15px;
+    height: 30px;
+    width: 30px;
+    border-radius: 25px;
+    visibility: hidden; /* Ocultar por defecto */
+}
+
+.show-members:hover .X-button {
+    visibility: visible; /* Mostrar solo en hover */
+}
