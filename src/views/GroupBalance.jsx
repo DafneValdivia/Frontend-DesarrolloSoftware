@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import '../App.css';
 import './GroupBalance.css'
 import RoundButton from "../components/RoundButton";
+import Popup from "../components/PopUp";
 
 export default function GroupBalance() {
 
@@ -45,7 +46,6 @@ export default function GroupBalance() {
                 return "";
         }
     };
-
     const [searchDeudor, setSearchDeudor] = useState(""); // Estado para buscar deudor
     const [searchPrestador, setSearchPrestador] = useState(""); // Estado para buscar prestador
     const [filter, setFilter] = useState("todos");
@@ -57,16 +57,7 @@ export default function GroupBalance() {
       });
     const sortedOperations = [...filteredData].sort((a, b) => a.deuda_id - b.deuda_id);
 
-    const handleAddDebt = () => {
-        const newDebt = {
-            deuda_id: balanceData.length + 1,
-            state: "Pendiente",
-            deudor: "Nuevo Deudor",
-            prestador: "Nuevo Prestador",
-            amount: 10000,
-        };
-        setBalanceData([...balanceData, newDebt]);
-    };
+    const [popUp, setPopUp] = useState(null);
 
     return (
         <div>
@@ -109,8 +100,6 @@ export default function GroupBalance() {
                 />
             </div>  
             </div>
-            
-
             <table>
                 <thead>
                     <tr>
@@ -134,9 +123,13 @@ export default function GroupBalance() {
                 </tbody>
             </table>
             <RoundButton 
-                onClick={handleAddDebt}
+                onClick={(e) => setPopUp("on")}
                 altText="Agregar deuda" // Texto alternativo
             />
+
+            {popUp && <Popup onClose={(e) => setPopUp(null)} />}
+
+        
         </div>
     )
 }
