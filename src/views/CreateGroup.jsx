@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./CreateGroup.css";
 import AddMember from "./../assets/agregarMember.png";
+import Navbar from "../components/Navbar";
 
 export default function CreateGroup() {
 
@@ -88,6 +89,7 @@ export default function CreateGroup() {
 
     return (
         <div>
+            <Navbar />
             <div className="create-group-container">
                 <h2>CREAR NUEVO GRUPO</h2>
                 <input
