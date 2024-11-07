@@ -1,0 +1,91 @@
+.create-group-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px;
+    border: 2.5px solid #003049;
+    width: 40%;
+    max-width: 400px;
+    margin: auto;
+    margin-top: 5%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  }
+  
+  h2 {
+    color: #003049; /* == rgb(0, 48, 73)  */
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  input {
+    width: 95%;
+    padding: 10px;
+    border: 1px solid rgba(0, 48, 73, 0.7);
+    border-radius: 4px;
+    color: #003049;
+  }
+  
+  
+  button {
+    cursor: pointer;
+    border: none;    
+  }
+
+  button:active{
+    transform: scale(0.97); /* Reduce ligeramente el tamaño para simular un clic */
+  }
+  
+  #create-group-button {
+    background-color: #ea8c2f; /* == rgb(234, 140, 47); */
+    padding: 10px 20px;
+    border-radius: 25px;
+    color: #fff;
+    height: 50px;
+    width: 250px;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+  
+  #create-group-button:hover{
+    background-color: rgba(234, 140, 47, 0.8);
+  }
+
+  
+  #add-member-div {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+  }
+
+ul {
+   justify-content: flex-start;
+   width: 95%;
+   padding: 0%;
+   list-style: none;
+   margin: 0%;
+
+
+}
+
+.suggestion-email {
+    font-size: 12px;
+    font-style: normal;
+}
+li {
+    background-color: #f3f3f3;
+    width: 80%;
+    padding: 8px;
+    font-size: 13px;
+    color: #003049;
+    font-weight: 480;
+}
+
+li:hover .suggestion-email{
+    background-color: #003049;
+    color: #fff;
+}

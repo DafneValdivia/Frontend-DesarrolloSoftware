@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../components/Navbar";
-import CreateGroupForm from '../components/CreateGroupForm';
+import AddContactForm from '../components/AddContactForm';
 
 const contactos = [
     { username: "juan", email: "juan@example.com" },
@@ -11,7 +11,7 @@ const contactos = [
     { username: "carlos", email: "carlos@example.com" }
 ];
 
-export default function CreateGroup() {
+export default function MyContacts() {
     const handleGroupCreation = (groupData) => {
         console.log("Grupo creado:", groupData);
         // Aquí puedes manejar la lógica de envío al backend o actualización del estado global
@@ -22,7 +22,9 @@ export default function CreateGroup() {
     return (
         <div>
             <Navbar />
-            <CreateGroupForm contactos={contactos} onGroupCreate={handleGroupCreation} />
+            <div>
+                <AddContactForm contactos={contactos} onGroupCreate={handleGroupCreation} />
+            </div>
         </div>
     );
 

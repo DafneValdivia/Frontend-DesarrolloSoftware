@@ -13,7 +13,7 @@ const Navbar = () => {
             </div>
             <div className="buttons">
                 <a className="mis-botones" href="/" >INICIO</a>
-                <a className="mis-botones" href="#misContactos">MIS CONTACTOS</a>
+                <a className="mis-botones" href="/mycontacts">MIS CONTACTOS</a>
                 <a className="mis-botones" href="/yourgroups">MIS GRUPOS</a>
                 <a id="mi-perfil" href="#perfil">
                 <img src={MemberLogo} alt="Icono de perfil" className="profile-icon" />
