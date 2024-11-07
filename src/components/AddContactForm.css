@@ -7,7 +7,7 @@
     border: 2.5px solid #003049;
     width: 40%;
     max-width: 400px;
-    margin: auto;
+    margin: 0%;
     margin-top: 5%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
@@ -44,7 +44,8 @@
     border-radius: 25px;
     color: #fff;
     height: 50px;
-    width: 250px;
+    width: 62.5%;
+    max-width: 250px;
     font-size: 18px;
     font-weight: 600;
     margin-top: 10px;

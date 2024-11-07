@@ -1,0 +1,49 @@
+.my-contacts-container {
+    background-color: #e7ebed;
+    width: 40%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0%;
+    margin-top: 5%;
+    border-radius: 10px;
+    border: 1px solid #e4e5e6;
+}
+
+.my-contacts-container h2 {
+    color: #003049;
+    margin-bottom: 10px;
+}
+
+.contactos-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.contacto-one {
+    background-color: white;
+    border-radius: 5px;
+    width: 90%;
+    display: flex;
+    justify-content: flex-start;
+    margin: 2px;
+    align-items: flex-end;
+    cursor: pointer;
+}
+
+.contacto-username {
+    font-size: 13px;
+}
+
+.contacto-email {
+    font-style: italic;
+    font-size: 10px;
+    margin-left: 2%;
+    color: #666666;
+}

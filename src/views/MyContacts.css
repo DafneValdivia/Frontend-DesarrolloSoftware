@@ -1,0 +1,10 @@
+.contacts-page-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* o center */
+    align-items: flex-start; /* probar baseline */
+    width: 100%;
+    /* padding: 10px;
+    margin: 20px; */
+    gap: 4%;
+}
