@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import GroupCard from "../components/GroupCard";
 import "./YourGroups.css";
+import Navbar from '../components/Navbar';
 
 export default function YourGroups() {
 
@@ -23,6 +24,7 @@ export default function YourGroups() {
 
     return (
         <div>
+            <Navbar />
             <div id="groups-container">
                 <input
                     id="search-bar"
