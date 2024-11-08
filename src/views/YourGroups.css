@@ -1,0 +1,44 @@
+#groups-container {
+  display: flex;
+  flex-direction: column;
+  margin: 5% auto;
+  margin-top: 5%;
+  width: 90%;
+}
+
+#search-bar {
+  width: 100%;
+  height: 28px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1%;
+  border: 1px solid #ffffff;
+  border-radius: 28px;
+  background-color: #ea8c2f;
+  color: white;
+  font-size: medium;
+  font-weight: bold;
+  outline: none;
+}
+
+#search-bar::placeholder {
+  color: white;
+  opacity: 1;
+  font-weight: bold;
+  font-size: medium;
+}
+
+#group-cards {
+  max-height: 75vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#no-groups-message {
+  text-align: center;
+  margin-top: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
