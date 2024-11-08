@@ -1,0 +1,53 @@
+/* Centrar la tabla en la página */
+table {
+    margin: 0 auto;
+    border-collapse: collapse; /* Elimina los espacios entre bordes */
+    width: 80%; /* Ajusta el ancho de la tabla como prefieras */
+}
+
+/* Bordes y color para la tabla */
+table, th, td {
+    border: 2px solid #000;
+}
+
+/* Estilos para el encabezado de la tabla */
+thead {
+    background-color: #003049; /* Color de fondo azul */
+    color: white; /* Color de letra blanco */
+}
+
+/* Agregar relleno a las celdas */
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+/* Estilos para los diferentes estados */
+.estado-pendiente {
+    background-color: #ef9393;
+    color: #003049;
+}
+
+.estado-pagado {
+    background-color: #b2e4aa;
+    color: #003049;
+}
+
+.estado-en-proceso {
+    background-color: #f6ce7e;
+    color: #003049;
+}
+
+.filters{
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    color: #003049; /* Cambiado a negro para que sea visible */
+    border-radius: none;
+    width: 100%;
+    justify-content: center;
+}
+
+.filter{
+    padding-left: 10px;
+}
