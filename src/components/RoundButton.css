@@ -1,0 +1,51 @@
+/* src/app/components/RoundButton.css */
+.round-button {
+    position: fixed; /* Fijar el botón en la esquina inferior derecha */
+    bottom: 20px; /* Espaciado desde el fondo */
+    right: 20px; /* Espaciado desde la derecha */
+    width: 100px; /* Ancho del botón */
+    height: 100px; /* Alto del botón */
+    border: none; /* Sin borde */
+    border-radius: 50px; /* Redondear el botón */
+    background-color: transparent; /* Hacer el fondo transparente */
+    cursor: pointer; /* Cambiar cursor al pasar sobre el botón */
+    transition: background-color 0.3s; /* Transición para el color de fondo */
+}
+
+.round-button:hover{
+    border: 2px solid #003049; 
+
+}
+
+.button-image {
+    width: 80%; /* Ajustar el tamaño de la imagen */
+    height: auto; /* Mantener la proporción de la imagen */
+}
+
+/* Estilo opcional para el tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: black;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Ubicación del tooltip */
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}

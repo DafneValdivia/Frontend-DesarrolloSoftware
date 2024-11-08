@@ -23,7 +23,7 @@ function App() {
         <div className="left_card">
         <h1>PuduPay</h1>
         <h2>Divide y lleva la cuenta de gastos compartidos de la manera más fácil</h2>
-          <button className='boton_empezar' onClick={handleButtonClick}>
+          <button className='boton_naranja' onClick={handleButtonClick}>
             Empieza ahora
           </button>
         </div>
