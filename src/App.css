@@ -94,3 +94,17 @@ h2 {
 .foto {
   max-width: 450px;
 }
+
+input {
+  width: 290px;
+  height: 30px;
+  border-color: #003049;
+  color: #003049;
+}
+
+select{
+  width: 290px;
+  height: 35px;
+  border-color: #003049;
+  color: #003049;
+}
