@@ -15,7 +15,7 @@ const Navbar = () => {
                 <a className="mis-botones" href="/" >INICIO</a>
                 <a className="mis-botones" href="/mycontacts">MIS CONTACTOS</a>
                 <a className="mis-botones" href="/yourgroups">MIS GRUPOS</a>
-                <a id="mi-perfil" href="#perfil">
+                <a id="mi-perfil" href="/profile">
                 <img src={MemberLogo} alt="Icono de perfil" className="profile-icon" />
                 MI PERFIL</a>
             </div>
