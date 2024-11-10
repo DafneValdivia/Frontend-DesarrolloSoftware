@@ -6,6 +6,8 @@ const Auth0ProviderWithHistory = ({ children }) => {
   const domain = import.meta.env.VITE_AUTH0_DOMAIN;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
   const callbackUrl = import.meta.env.VITE_AUTH0_CALLBACK_URL;
+  // console.log(callbackUrl);
+  // console.log(window.location.origin);
 
   const navigate = useNavigate();
 
@@ -18,7 +20,7 @@ const Auth0ProviderWithHistory = ({ children }) => {
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri: window.location.origin,
+        redirect_uri: callbackUrl,
       }}
       onRedirectCallback={onRedirectCallback}
     >
