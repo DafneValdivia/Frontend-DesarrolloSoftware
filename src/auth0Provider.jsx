@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
 
 const Auth0ProviderWithHistory = ({ children }) => {
-  const domain = import.meta.env.AUTH0_DOMAIN;
-  const clientId = import.meta.env.AUTH0_CLIENT_ID;
+  const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  const callbackUrl = import.meta.env.VITE_AUTH0_CALLBACK_URL;
 
   const navigate = useNavigate();
 
@@ -19,9 +20,7 @@ const Auth0ProviderWithHistory = ({ children }) => {
       authorizationParams={{
         redirect_uri: window.location.origin,
       }}
-      onRedirectCallback={(appState) => {
-        navigate(appState?.returnTo || window.location.pathname);
-      }}
+      onRedirectCallback={onRedirectCallback}
     >
       {children}
     </Auth0Provider>
