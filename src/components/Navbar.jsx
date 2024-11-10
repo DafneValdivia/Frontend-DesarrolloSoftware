@@ -18,15 +18,13 @@ const Navbar = () => {
                 <a className="mis-botones" href="/" >INICIO</a>
                 <a className="mis-botones" href="/mycontacts">MIS CONTACTOS</a>
                 <a className="mis-botones" href="/yourgroups">MIS GRUPOS</a>
-                <a  id="mi-perfil" 
-                    href="#perfil"  
+                <a  id="mi-perfil"   
                     onClick={() => 
                         isAuthenticated 
                             ? logout({ returnTo: window.location.origin }) 
                             : loginWithRedirect()
                     }
                 >
-                    <img src={MemberLogo} alt="Icono de perfil" className="profile-icon" />
                     {isAuthenticated ? 'Cerrar Sesión' : 'Iniciar Sesión'}
                 </a>
             </div>
