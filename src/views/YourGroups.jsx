@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import GroupCard from "../components/GroupCard";
 import "./YourGroups.css";
 import Navbar from '../components/Navbar';
@@ -6,6 +7,7 @@ import Navbar from '../components/Navbar';
 export default function YourGroups() {
 
     const [searchTerm, setSearchTerm] = useState("");
+    const navigate = useNavigate();
 
     const groupsData = [
         { id: 1, groupName: "Grupo A" },
@@ -22,10 +24,17 @@ export default function YourGroups() {
         group.groupName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleNewGroupClick = () => {
+        navigate("/creategroup"); 
+    };
+
     return (
         <div>
             <Navbar />
             <div id="groups-container">
+                <button id="new-group-button" onClick={handleNewGroupClick}>
+                    +
+                </button>
                 <input
                     id="search-bar"
                     type="text"

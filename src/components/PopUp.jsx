@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import './Popup.css';
+import './PopUp.css';
 import '../App.css'
 
 export default function Popup({onClose}) {
