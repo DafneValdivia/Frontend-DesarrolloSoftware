@@ -49,5 +49,7 @@ th, td {
 }
 
 .filter{
-    padding-left: 10px;
+    padding: 10px;
+    flex-direction: row;
+    width: 300px;
 }

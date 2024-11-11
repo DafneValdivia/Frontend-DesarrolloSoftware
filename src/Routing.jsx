@@ -15,7 +15,7 @@ export default function Routing() {
             <Route path="/yourgroups" element={<YourGroups />} />
             <Route path="/creategroup" element={<CreateGroup />} />
             <Route path="/mycontacts" element={<MyContacts />} />
-            <Route path="/group" element={<GroupBalance />} />
+            <Route path="/group/:id" element={<GroupBalance />} />
             <Route path="/profile" element={<Profile />} />
         </Routes>
     )
