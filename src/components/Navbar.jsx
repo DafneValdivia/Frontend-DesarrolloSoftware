@@ -15,22 +15,24 @@ const Navbar = () => {
                 </div>
             </div>
             <div className="buttons">
-                <a className="mis-botones" href="/" >INICIO</a>
-                <a className="mis-botones" href="/mycontacts">MIS CONTACTOS</a>
-                <a className="mis-botones" href="/yourgroups">MIS GRUPOS</a>
-
-                <a className="mis-botones" href="/profile">MI PERFIL</a>
-
-                <a  id="mi-perfil"   
-                    onClick={() => 
-                        isAuthenticated 
-                            ? logout({ returnTo: window.location.origin }) 
+                {isAuthenticated && (
+                    <>
+                        <a className="mis-botones" href="/" >INICIO</a>
+                        <a className="mis-botones" href="/mycontacts">MIS CONTACTOS</a>
+                        <a className="mis-botones" href="/yourgroups">MIS GRUPOS</a>
+                        <a className="mis-botones" href="/profile">MI PERFIL</a>
+                    </>
+                )}
+                <a
+                    id="mi-perfil"
+                    onClick={() =>
+                        isAuthenticated
+                            ? logout({ returnTo: window.location.origin })
                             : loginWithRedirect()
                     }
                 >
                     {isAuthenticated ? 'Cerrar Sesión' : 'Iniciar Sesión'}
                 </a>
-
             </div>
         </nav>
     );
