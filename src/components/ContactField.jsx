@@ -1,27 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import "./ContactField.css";
 import Lapiz from "./../assets/lapiz.png";
+import { useAuth0 } from "@auth0/auth0-react"; // Si estás usando Auth0
 
 const ContactField = ({ contactos }) => {
     const [contactList, setContactList] = useState(contactos);
+    const { user, isAuthenticated } = useAuth0(); // Obtener el user_id del usuario autenticado
     const [isEditing, setIsEditing] = useState(false);
     const navigate = useNavigate();
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-    const handleRemoveContact = (index) => {
-        const updatedContacts = contactList.filter((_, i) => i !== index);
-        setContactList(updatedContacts);
+    // Sincroniza contactList con contactos cada vez que contactos cambie
+    useEffect(() => {
+        setContactList(contactos);
+    }, [contactos]);
+
+    const handleRemoveContact = async (index, mail_contacto) => {
+        try {
+            // Crear una nueva lista sin el contacto eliminado
+            const updatedContacts = contactList.filter((_, i) => i !== index);
+            setContactList(updatedContacts);
+            await axios.delete(`${serverUrl}/contacts/${user.email}/${mail_contacto}`, {
+                withCredentials: true
+            });
+            // Aquí podrías enviar la lista actualizada al componente padre si es necesario
+        } catch (error) {
+            console.error("Error al remover el contacto:", error);
+        }
     };
 
     const toggleEditing = () => {
         setIsEditing(!isEditing);
     };
 
-    const handleContactClick = (contacto) => {
-        // Redirige a la página del contacto específico
-        navigate(`/contact/${contacto.id}`);
-    };
+    // const handleContactClick = (contacto) => {
+    //     navigate(`/contact/${contacto.id}`);
+    // };
 
     return (
         <div className="my-contacts-container">
@@ -34,19 +51,19 @@ const ContactField = ({ contactos }) => {
             {contactList.length > 0 ? (
                 <ul className="contactos-list">
                     {contactList.map((contacto, index) => (
-                        <li 
-                            className="contacto-one" 
-                            key={index} 
-                            onClick={() => handleContactClick(contacto)} 
+                        <li
+                            className="contacto-one"
+                            key={index}
+                        // onClick={() => handleContactClick(contacto)}
                         >
                             {isEditing && (
-                                <button onClick={(e) => { e.stopPropagation(); handleRemoveContact(index); }} className="X-button">
+                                <button onClick={(e) => { e.stopPropagation(); handleRemoveContact(index, contacto.mail); }} className="X-button">
                                     X
                                 </button>
                             )}
                             <span className="contacto-username">{contacto.username}</span>
                             <br />
-                            <span className="contacto-email">({contacto.email})</span>
+                            <span className="contacto-email">({contacto.mail})</span>
                         </li>
                     ))}
                 </ul>

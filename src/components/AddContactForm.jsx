@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import "./AddContactForm.css";
 
 const AddContactForm = ({ contactos, onContactAdded }) => {
+    const [contactList, setContactList] = useState(contactos);
     const [newContactEmail, setNewContactEmail] = useState("");
     const [suggestions, setSuggestions] = useState([]);
 
@@ -11,8 +12,8 @@ const AddContactForm = ({ contactos, onContactAdded }) => {
         setNewContactEmail(value);
 
         if (value) {
-            const filteredSuggestions = contactos.filter(contacto => 
-                contacto.email.toLowerCase().includes(value.toLowerCase())
+            const filteredSuggestions = contactList.filter(contacto => 
+                contacto.mail.toLowerCase().includes(value.toLowerCase())
             );
             setSuggestions(filteredSuggestions);
         } else {
@@ -21,13 +22,13 @@ const AddContactForm = ({ contactos, onContactAdded }) => {
     };
 
     const handleSelectSuggestion = (suggestion) => {
-        setNewContactEmail(suggestion.email);
+        setNewContactEmail(suggestion.mail);
         setSuggestions([]);
     };
 
     const handleAddContact = () => {
-        const selectedContact = contactos.find(contacto =>
-            contacto.email === newContactEmail
+        const selectedContact = contactList.find(contacto =>
+            contacto.mail === newContactEmail
         );
 
         if (!selectedContact) {
@@ -39,6 +40,10 @@ const AddContactForm = ({ contactos, onContactAdded }) => {
 
         setNewContactEmail("");
     };
+
+    useEffect(() => {
+        setContactList(contactos);
+    }, [contactos]);
 
     return (
         <div className="create-group-container">
@@ -62,7 +67,7 @@ const AddContactForm = ({ contactos, onContactAdded }) => {
                             key={index}
                             onClick={() => handleSelectSuggestion(suggestion)}
                         >
-                            {suggestion.email}
+                            {suggestion.mail}
                         </li>
                     ))}
                 </ul>
