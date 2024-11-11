@@ -16,6 +16,12 @@ const contactosExistentes = [
 const misContactos = [
     { username: "juan", email: "juan@example.com" },
     { username: "maria", email: "maria@example.com" },
+    { username: "carlos", email: "carlos@example.com" },
+    { username: "juan", email: "juan@example.com" },
+    { username: "maria", email: "maria@example.com" },
+    { username: "pedro", email: "pedro@example.com" },
+    { username: "ana", email: "ana@example.com" },
+    { username: "luisa", email: "luisa@example.com" },
     { username: "carlos", email: "carlos@example.com" }
 ];
 

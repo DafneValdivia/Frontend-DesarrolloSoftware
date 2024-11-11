@@ -5,6 +5,7 @@ import YourGroups from './views/YourGroups';
 import CreateGroup from './views/CreateGroup';
 import MyContacts from './views/MyContacts';
 import GroupBalance from './views/GroupBalance';
+import Profile from './views/MyProfile';
 
 export default function Routing() {
     return (
@@ -15,6 +16,7 @@ export default function Routing() {
             <Route path="/creategroup" element={<CreateGroup />} />
             <Route path="/mycontacts" element={<MyContacts />} />
             <Route path="/group" element={<GroupBalance />} />
+            <Route path="/profile" element={<Profile />} />
         </Routes>
     )
 }

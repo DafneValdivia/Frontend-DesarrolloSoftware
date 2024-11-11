@@ -18,6 +18,9 @@ const Navbar = () => {
                 <a className="mis-botones" href="/" >INICIO</a>
                 <a className="mis-botones" href="/mycontacts">MIS CONTACTOS</a>
                 <a className="mis-botones" href="/yourgroups">MIS GRUPOS</a>
+
+                <a className="mis-botones" href="/profile">MI PERFIL</a>
+
                 <a  id="mi-perfil"   
                     onClick={() => 
                         isAuthenticated 
@@ -27,6 +30,7 @@ const Navbar = () => {
                 >
                     {isAuthenticated ? 'Cerrar Sesión' : 'Iniciar Sesión'}
                 </a>
+
             </div>
         </nav>
     );
