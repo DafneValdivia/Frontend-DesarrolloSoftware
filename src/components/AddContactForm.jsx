@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from 'prop-types';
 import "./AddContactForm.css";
 
-const AddContactForm = ({ contactos }) => {
+const AddContactForm = ({ contactos, onContactAdded }) => {
     const [newContactEmail, setNewContactEmail] = useState("");
     const [suggestions, setSuggestions] = useState([]);
 
@@ -33,12 +33,11 @@ const AddContactForm = ({ contactos }) => {
         if (!selectedContact) {
             alert("Este contacto no existe. Puedes hacerle una invitación para que se una a esta maravillosa aplicación :D!");
         } else {
-            alert("Contacto añadido con éxito"); // Mensaje de confirmación
-            window.location.reload(); // Recargar la página después de añadir el contacto
+            onContactAdded(selectedContact);
+            setSuggestions([]);
         }
 
         setNewContactEmail("");
-        setSuggestions([]);
     };
 
     return (
@@ -78,7 +77,8 @@ const AddContactForm = ({ contactos }) => {
 
 // Define las propTypes para asegurar que los props sean del tipo correcto
 AddContactForm.propTypes = {
-    contactos: PropTypes.array.isRequired
+    contactos: PropTypes.array.isRequired,
+    onContactAdded: PropTypes.func.isRequired
 };
 
 export default AddContactForm;
