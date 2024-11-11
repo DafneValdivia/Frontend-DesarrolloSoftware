@@ -7,7 +7,7 @@
 }
 
 #search-bar {
-  width: 100%;
+  width: 95%;
   height: 28px;
   padding: 10px;
   display: flex;
@@ -41,4 +41,29 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#new-group-button {
+  background-color: #003049;
+  color: #ffffff;
+  border-radius: 25px;
+  width: 45px;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  position: absolute;
+  right: 5%;
+  bottom: 8%;
+}
+
+#new-group-button:hover {
+  background-color: #00517c;
+}
+
+
+#new-group-button:active{
+  transform: scale(0.97); /* Reduce ligeramente el tamaño para simular un clic */
+  font-size: 21px;
+  padding: 10px;
 }

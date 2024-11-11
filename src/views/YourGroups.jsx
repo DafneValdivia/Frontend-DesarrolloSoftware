@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import GroupCard from "../components/GroupCard";
 import "./YourGroups.css";
 import Navbar from '../components/Navbar';
@@ -12,6 +13,8 @@ export default function YourGroups() {
     const [loading, setLoading] = useState(true); // Estado para mostrar carga
     const [error, setError] = useState(null);
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         // Función para hacer la llamada a la API
@@ -37,10 +40,17 @@ export default function YourGroups() {
         group.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleNewGroupClick = () => {
+        navigate("/creategroup"); 
+    };
+
     return (
         <div>
             <Navbar />
             <div id="groups-container">
+                <button id="new-group-button" onClick={handleNewGroupClick}>
+                    +
+                </button>
                 <input
                     id="search-bar"
                     type="text"

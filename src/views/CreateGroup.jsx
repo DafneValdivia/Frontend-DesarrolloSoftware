@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import CreateGroupForm from '../components/CreateGroupForm';
+import "./CreateGroup.css";
 
 const contactos = [
     { username: "juan", email: "juan@example.com" },
@@ -22,8 +23,11 @@ export default function CreateGroup() {
     return (
         <div>
             <Navbar />
-            <CreateGroupForm contactos={contactos} onGroupCreate={handleGroupCreation} />
+            <div className="createGroup-page-container">
+                <CreateGroupForm contactos={contactos} onGroupCreate={handleGroupCreation} />
+            </div>
         </div>
+    
     );
 
 }
