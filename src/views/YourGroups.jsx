@@ -9,32 +9,41 @@ import { useAuth0 } from '@auth0/auth0-react';
 export default function YourGroups() {
 
     const [searchTerm, setSearchTerm] = useState("");
-    const [groupsData, setGroupsData] = useState([]); // Estado para los datos de grupos
-    const [loading, setLoading] = useState(true); // Estado para mostrar carga
+    const [groupsData, setGroupsData] = useState([]); 
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+    const { user, isAuthenticated } = useAuth0();
     const navigate = useNavigate();
 
-
     useEffect(() => {
-        // Función para hacer la llamada a la API
         const fetchGroups = async () => {
+            console.log("Cargando grupos...");
+            console.log("Usuario autenticado:", isAuthenticated);
+            console.log("Usuario:", user);
+            console.log("Email:", user.email);
             try {
-                const accessToken = await getAccessTokenSilently();
-                setLoading(true);
-                const response = await axios.get("http://localhost:3000/groups/", {
-                    withCredentials: true});
-                setGroupsData(response.data);
+                if (isAuthenticated && user) {
+                    setLoading(true);
+                    const response = await axios.get(`http://localhost:3000/groups/user/${user.email}/`, {
+                        withCredentials: true
+                    });
+                    console.log("Grupos cargados:", response.data);
+                    setGroupsData(response.data);
+                } else {
+                    console.log("Usuario no autenticado");
+                }
                 setLoading(false);
             } catch (error) {
+                console.error("Hubo un problema al cargar los grupos:", error);
                 setError("Hubo un problema al cargar los grupos");
                 setLoading(false);
             }
         };
 
-        fetchGroups(); // Llama a la función al montar el componente
-        console.log(groupsData);
-    }, []);
+        if (isAuthenticated && user) {
+            fetchGroups();
+        }
+    }, [isAuthenticated, user]);
 
     const filteredGroups = groupsData.filter(group => 
         group.name.toLowerCase().includes(searchTerm.toLowerCase())
