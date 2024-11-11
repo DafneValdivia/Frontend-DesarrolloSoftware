@@ -5,24 +5,22 @@ import ContactField from "../components/ContactField";
 import "./MyContacts.css";
 
 const contactosExistentes = [
-    { username: "juan", email: "juan@example.com" },
-    { username: "maria", email: "maria@example.com" },
-    { username: "pedro", email: "pedro@example.com" },
-    { username: "ana", email: "ana@example.com" },
-    { username: "luisa", email: "luisa@example.com" },
-    { username: "carlos", email: "carlos@example.com" }
+    { username: "dafne", email: "dafne@example.com" },
+    { username: "mari", email: "mari@example.com" },
+    { username: "cata", email: "cata@example.com" },
+    { username: "alonso", email: "alonso@example.com" },
+    { username: "stefano", email: "stefano@example.com" },
+    { username: "cristobal", email: "cristobal@example.com" }
 ];
 
 const misContactos = [
     { username: "juan", email: "juan@example.com" },
     { username: "maria", email: "maria@example.com" },
     { username: "carlos", email: "carlos@example.com" },
-    { username: "juan", email: "juan@example.com" },
-    { username: "maria", email: "maria@example.com" },
-    { username: "pedro", email: "pedro@example.com" },
-    { username: "ana", email: "ana@example.com" },
-    { username: "luisa", email: "luisa@example.com" },
-    { username: "carlos", email: "carlos@example.com" }
+    { username: "pepito", email: "pepito@example.com" },
+    { username: "ines", email: "ines@example.com" },
+    { username: "pablo", email: "pablo@example.com" },
+    { username: "antonia", email: "antonia@example.com" }
 ];
 
 
