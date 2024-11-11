@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import PropTypes from 'prop-types';
+import { useAuth0 } from "@auth0/auth0-react";
 import "./CreateGroupForm.css";
-import AddMember from "./../assets/agregarMember.png";
+import axios from 'axios';
 
 const CreateGroupForm = ({ contactos, onGroupCreate }) => {
+    const { user, isAuthenticated } = useAuth0();
     const [groupName, setGroupName] = useState("");
     const [memberEmail, setMemberEmail] = useState("");
     const [members, setMembers] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
+
+    // Obtén el userId del objeto de usuario de Auth0 si el usuario está autenticado
+    const userId = isAuthenticated ? user.sub : null;
 
     const handleInputChange = (e) => {
         const value = e.target.value;
@@ -18,14 +23,13 @@ const CreateGroupForm = ({ contactos, onGroupCreate }) => {
                 (contacto.username.toLowerCase().includes(value.toLowerCase()) ||
                  contacto.email.toLowerCase().includes(value.toLowerCase())) &&
                 !members.some(member => member.email === contacto.email)
-        );
+            );
             setSuggestions(filteredSuggestions);
         } else {
             setSuggestions([]);
         }
     };
 
-    // Añade el contacto seleccionado al grupo y limpia las sugerencias
     const handleSelectSuggestion = (suggestion) => {
         setMemberEmail(suggestion.email);
         setSuggestions([]);
@@ -46,19 +50,35 @@ const CreateGroupForm = ({ contactos, onGroupCreate }) => {
         setMemberEmail("");
     };
 
-    const handleCreateGroup = () => {
+    const handleCreateGroup = async () => {
         if (!groupName) {
             alert("Por favor, ingrese un nombre para el grupo");
             return;
         } else if (members.length === 0) {
             alert("Por favor, ingrese al menos un contacto para el grupo");
             return;
+        } else if (!userId) {
+            alert("No se pudo obtener el ID del usuario. Intente iniciar sesión nuevamente.");
+            return;
         } else {
-            // Llamada al callback para notificar la creación
-            onGroupCreate({ groupName, members });
-            setMembers([]);
-            setMemberEmail("");
-            setGroupName("");
+            const groupData = {
+                creatorId: userId, // Envía el ID del usuario autenticado como el creador
+                groupName,
+                members: members.map(member => ({ username: member.username, email: member.email }))
+            };
+
+            try {
+                const response = await axios.post('/api/groups', groupData);
+
+                alert('Grupo creado exitosamente');
+                onGroupCreate(response.data);
+                setMembers([]);
+                setMemberEmail("");
+                setGroupName("");
+            } catch (error) {
+                console.error('Error al crear el grupo:', error);
+                alert('Hubo un error al crear el grupo');
+            }
         }
     };
 

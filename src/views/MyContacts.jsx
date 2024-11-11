@@ -1,39 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import Navbar from "../components/Navbar";
 import AddContactForm from '../components/AddContactForm';
 import ContactField from "../components/ContactField";
+import { useAuth0 } from "@auth0/auth0-react"; // Si estás usando Auth0
 import "./MyContacts.css";
 
-const contactosExistentes = [
-    { username: "juan", email: "juan@example.com" },
-    { username: "maria", email: "maria@example.com" },
-    { username: "pedro", email: "pedro@example.com" },
-    { username: "ana", email: "ana@example.com" },
-    { username: "luisa", email: "luisa@example.com" },
-    { username: "carlos", email: "carlos@example.com" }
-];
-
-const misContactos = [
-    { username: "juan", email: "juan@example.com" },
-    { username: "maria", email: "maria@example.com" },
-    { username: "carlos", email: "carlos@example.com" }
-];
-
-
 export default function MyContacts() {
-    // pedir los contactos existentes al back
+    const { user, isAuthenticated } = useAuth0(); // Obtener el user_id del usuario autenticado
+    const [contactosExistentes, setContactosExistentes] = useState([]);
+    const [misContactos, setMisContactos] = useState([]);
+
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+    const fetchContactos = async () => {
+        try {
+            // Solicitud para obtener todos los contactos existentes
+            const responseExistentes = await axios.get(`${serverUrl}/users/`);
+            setContactosExistentes(responseExistentes.data);
+            console.log(responseExistentes);
+
+
+            // Solicitud para obtener mis contactos solo si el usuario está autenticado
+            if (isAuthenticated && user) {
+                const userId = user.sub; // Aquí obtienes el user_id del usuario autenticado
+                const responseMisContactos = await axios.get(`/contacts/user/${userId}/`);
+                setMisContactos([responseMisContactos.data]);
+            }
+        } catch (error) {
+            console.error('Error al obtener los contactos:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchContactos();
+    }, [isAuthenticated, user]); // Ejecutar cuando el usuario esté autenticado
 
     const handleAddContact = (groupData) => {
         console.log("Grupo creado:", groupData);
-
-        // Aquí puedes manejar la lógica de envío al backend o actualización del estado global
-
-    
     };
 
     const handleContactoClicked = (contactoClicked) => {
-        console.log("Contacto Clickeado:", contactoClicked )
-        // ver si hacer algo con ese contacto o no
+        console.log("Contacto Clickeado:", contactoClicked);
     };
 
     return (
@@ -45,5 +53,4 @@ export default function MyContacts() {
             </div>
         </div>
     );
-
 }
