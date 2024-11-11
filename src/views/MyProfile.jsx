@@ -3,26 +3,58 @@ import ProfileInfo from '../components/ProfileInfo';
 import InvitationField from '../components/InvitationField';
 import './MyProfile.css';
 import Navbar from '../components/Navbar';
+import { useAuth0 } from "@auth0/auth0-react"; // Si estás usando Auth0
+import axios from 'axios';
 
 const Profile = () => {
 
-    const [invitations, setInvitations] = useState([
-        { name: 'Juanito', group: '18 en Pucón', groupId: '1' },
-        { name: 'Maria', group: 'Viaje a la playa', groupId: '2' },
-        { name: 'Juanito', group: '18 en Pucón', groupId: '3' },
-        { name: 'Carlos', group: 'Grupo de Amigos', groupId: '4' },
-        { name: 'María', group: 'Familia', groupId: '5' },
-    ]);
 
-    // Función para manejar la aceptación de una invitación
-    const handleAccept = (groupId) => {
-        setInvitations(invitations.filter(invitation => invitation.groupId !== groupId));
+    const { user, isAuthenticated } = useAuth0(); // Obtener el user_id del usuario autenticado
+    const [invitations, setInvitations] = useState([]);
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+    console.log(user);
+
+    //Función para cargar las invitaciones desde el backend
+    const fetchInvitations = async () => {
+        try {
+            const email = user.email;
+            const response = await axios.get(`${serverUrl}/invitations/${email}`, {
+                withCredentials: true});
+            console.log(response.data);
+            const formattedData = response.data.map(({ group_id, group_name, invited_by }) => ({
+                id: group_id,
+                group: group_name,
+                name: invited_by
+            }));
+            console.log(formattedData);
+            setInvitations(formattedData);
+            if (response.ok) {
+                const data = await response.json();
+                setInvitations(data);
+            } else {
+                console.error('Error al obtener invitaciones');
+            }
+        } catch (error) {
+            console.error('Error de red:', error);
+        }
     };
 
-    // Función para manejar el rechazo de una invitación
-    const handleReject = (groupId) => {
-        setInvitations(invitations.filter(invitation => invitation.groupId !== groupId));
+    useEffect(() => {
+        fetchInvitations();
+    }, [isAuthenticated, user]);
+
+    //Función para manejar la aceptación de una invitación
+    const handleAccept = async (invitationId) => {
+        await fetch(`${serverUrl}/invitations/${invitationId}`, { method: 'PUT' });
+        fetchInvitations();
     };
+
+    //Función para manejar el rechazo de una invitación
+    const handleReject = async (invitationId) => {
+        await fetch(`${serverUrl}/invitations/${invitationId}`, { method: 'POST' });
+        fetchInvitations();
+    }
 
     return (
         <div>
@@ -33,6 +65,7 @@ const Profile = () => {
             </div>
         </div>
     );
+
 };
 
 export default Profile;
