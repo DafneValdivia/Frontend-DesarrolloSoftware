@@ -103,8 +103,9 @@ input {
 }
 
 select{
-  width: 290px;
-  height: 35px;
+  width: 305px;
+  height: 52px;
+  border-radius: 5px;
   border-color: #003049;
   color: #003049;
 }

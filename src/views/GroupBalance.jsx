@@ -3,8 +3,10 @@ import '../App.css';
 import './GroupBalance.css'
 import RoundButton from "../components/RoundButton";
 import Popup from "../components/PopUp";
+import Navbar from '../components/Navbar';
+import axios from "axios";
 
-export default function GroupBalance() {
+export default function GroupBalance({groupId}) {
 
     const balanceData = [
         {deuda_id: 1, state: "Pendiente", deudor: "Pedrito", prestador: "pepito", amount: 15000},
@@ -18,21 +20,31 @@ export default function GroupBalance() {
         {deuda_id: 7, state: "Pendiente", deudor: "Valentina", prestador: "Lucas", amount: 15000},
     ]
 
-    {/*
-    const [deudasData, setDeudasData] = useState("");
+    const transactions = [
+        {id: 1, title: "Castaño", creditorName: "Pedrito", amount: 15000},
+        {id: 2, title: "Hamburguesa", creditorName: "Cata", amount: 6000},
+        {id: 3, title: "Bencina", creditorName: "Mari", amount: 50000},
+        {id: 4, title: "Estadía", creditorName: "Pedrito", amount: 150000},
+        {id: 5, title: "Bencina", creditorName: "Paula", amount: 5000},
+    ]
+
+    {/*const [transactions, setTransactions] = useState("");
     
     useEffect(() => {
         // Función para obtener el staff de la API y separarlos en doctores y anestesistas
         const fetchData = async () => {
           try {
-            const response = await axios.get(`${URL_BACK}deudas`); // Ruta del back para obtener deudas segun el id del grupo
-            setDeudad(response);
+            const response = axios.get(`http://localhost:3000/transactions/group/${groupId}`, {
+                withCredentials: true
+            }) // Ruta del back para obtener deudas segun el id del grupo
+            setTransactions(response);
           } catch (error) {
-            console.error("Error al obtener datos", error);
+            console.error("Error al obtener Transacciones", error);
           }
         };
         fetchData();
-      }, []); */}
+      }, []);
+    */}
 
     const getStateClass = (state) => {
         switch (state) {
@@ -49,22 +61,95 @@ export default function GroupBalance() {
     const [searchDeudor, setSearchDeudor] = useState(""); // Estado para buscar deudor
     const [searchPrestador, setSearchPrestador] = useState(""); // Estado para buscar prestador
     const [filter, setFilter] = useState("todos");
-    const filteredData = balanceData.filter((deuda) => {
+    const filteredBalances = balanceData.filter((deuda) => {
         const matchesFilter = filter === "todos" || deuda.state === filter;
         const matchesDeudor = searchDeudor === "" || deuda.deudor.toString().includes(searchDeudor);
         const matchesPrestador = searchPrestador === "" || deuda.prestador.toLowerCase().includes(searchPrestador.toLowerCase());
         return matchesFilter && matchesDeudor && matchesPrestador;
       });
-    const sortedOperations = [...filteredData].sort((a, b) => a.deuda_id - b.deuda_id);
+      const filteredTransactions = balanceData.filter((deuda) => {
+          const matchesFilter = filter === "todos" || deuda.state === filter;
+          const matchesDeudor = searchDeudor === "" || deuda.deudor.toString().includes(searchDeudor);
+          const matchesPrestador = searchPrestador === "" || deuda.prestador.toLowerCase().includes(searchPrestador.toLowerCase());
+          return matchesFilter && matchesDeudor && matchesPrestador;
+        });
+    const sortedBalances = [...filteredBalances].sort((a, b) => a.deuda_id - b.deuda_id);
+    const sortedTransactions = [...filteredTransactions].sort((a, b) => a.deuda_id - b.deuda_id);
 
     const [popUp, setPopUp] = useState(null);
+    const [option, setOption] = useState("balance");
 
     return (
         <div>
-            <h2>Balance Grupal</h2>
+        <Navbar />
+            <div className='filters'>
+                <button className={`button ${option === 'balance' ? 'activeButton' : ''}`}  onClick={() => setOption('balance')}>Balance Grupal</button>
+                <button className={`button ${option === 'historial' ? 'activeButton' : ''}`}  onClick={() => setOption('historial')}>Historial de Transacciones</button>
+            </div>
+            
+             {option === "historial" && (
+            <div>
+                {/* <div className="filters">
+                <div className="filter">
+                <label className='label_filter'>Buscar Fecha:</label>
+                <select
+                    id="filter"
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)} // Actualizar el filtro al cambiar
+                >
+                    <option value="todos">Todos</option>
+                    <option value="Pendiente">Pendientes</option>
+                    <option value="Pagado">Pagados</option>
+                    <option value="En proceso">En proceso</option>
+                </select>  
+            </div>
+
+            <div className="filter">
+                <label className='label_filter'>Buscar Nombre Transacción:</label>
+                <input
+                    type="text"
+                    placeholder="Ej. 1"
+                    value={searchDeudor}
+                    onChange={(e) => setSearchDeudor(e.target.value)}
+                />  
+            </div>
+            <div className="filter">
+                <label className="label_filter">Buscar Prestador:</label>
+                <input
+                    type="text"
+                    placeholder="Ej. Persona A"
+                    value={searchPrestador}
+                    onChange={(e) => setSearchPrestador(e.target.value)}
+                />
+            </div>  
+                </div> */}
+            
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Prestador</th>
+                            <th>Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {transactions.map((transaccion) => (
+                            <tr key={transaccion.id}>
+                                <td>{transaccion.title}</td>
+                                <td>{transaccion.creditorName}</td>
+                                <td>{transaccion.amount}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div> 
+             )}
+
+            {option === "balance" &&( 
+            <div>
             <div className="filters">
-              <div>
-                <label htmlFor="filter">Filtrar por estado:</label>
+            <div className="filter">
+                <label className='label_filter'>Filtrar por estado:</label>
                 <select
                     id="filter"
                     value={filter}
@@ -81,7 +166,6 @@ export default function GroupBalance() {
             <div className="filter">
                 <label className='label_filter'>Buscar Deudor:</label>
                 <input
-                    className='input_filter'
                     type="text"
                     placeholder="Ej. 1"
                     value={searchDeudor}
@@ -92,7 +176,6 @@ export default function GroupBalance() {
                 {/* Buscador de Prstador */}
                 <label className="label_filter">Buscar Prestador:</label>
                 <input
-                    className='input_filter'
                     type="text"
                     placeholder="Ej. Persona A"
                     value={searchPrestador}
@@ -100,6 +183,7 @@ export default function GroupBalance() {
                 />
             </div>  
             </div>
+            
             <table>
                 <thead>
                     <tr>
@@ -111,7 +195,7 @@ export default function GroupBalance() {
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedOperations.map((deuda) => (
+                    {sortedBalances.map((deuda) => (
                         <tr key={deuda.deuda_id}>
                             <td>{deuda.deuda_id}</td>
                             <td className={getStateClass(deuda.state)}>{deuda.state}</td>
@@ -122,10 +206,12 @@ export default function GroupBalance() {
                     ))}
                 </tbody>
             </table>
+
             <RoundButton 
                 onClick={(e) => setPopUp("on")}
                 altText="Agregar deuda" // Texto alternativo
             />
+             </div> )}
 
             {popUp && <Popup onClose={(e) => setPopUp(null)} />}
 
