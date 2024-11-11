@@ -1,0 +1,93 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #003049; /* Color oscuro similar */
+    color: #fff;
+    padding: 4px 20px;
+}
+
+.navbar .logo-out {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+    border-radius: 30px;
+}
+
+.navbar .logo-out .logo{
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 2px solid #003049;
+    border-radius: 30px;
+}
+
+.navbar .logo-out .logo img {
+    height: 35px;
+    width: 35px;
+}
+
+.navbar .buttons {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+#mi-perfil {
+    text-decoration: none;
+    color: #fff;
+    background-color: #d62828;
+    padding: 8px 25px 8px 40px;
+    border-radius: 25px;
+    font-size: 11px;
+    font-weight: 600;
+}
+#mi-perfil:hover {
+    background-color: #e63946; 
+}
+
+.profile-icon {
+    width: 15px;
+    position: absolute;
+    right: 115px;
+}
+
+.mis-botones{
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0%;
+}
+
+.mis-botones:hover {
+    color: #fff;
+}
+
+a {
+    text-decoration: none;
+    width:max-content;
+    height: max-content;
+    transition: 0.3s ease-in-out;
+}
+
+.mis-botones::after {
+    content: "";
+    display: block;
+    width: 0%;
+    height: 1.5px;
+    background: #fff;
+    position: relative;
+    bottom: -3px;
+    left: 0;
+    transition: width 0.3s ease-in-out;
+}
+
+.mis-botones:hover::after{
+    width: 100%;
+}

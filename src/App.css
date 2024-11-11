@@ -1,25 +1,25 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
+} */
 
 .card {
   padding: 2em;
   flex-direction: column;
-  width: 1000px;
+  width: 80%;
   height: 500px;
   position: relative;
-  margin: 0 auto;
-
+  margin: 0% auto;
+  text-align: center;
 }
 
 .left_card {
   display: flex;
   flex-direction: column;
   width: 50%;
-  height: 100%;
+  height: 90%;
   position: absolute;
   align-items: flex-start;
   justify-content: center;
@@ -27,40 +27,85 @@
 
 .right_card {
   width: 50%;
-  height: 100%;
+  height: 90%;
   left: 50%;
   position: absolute;
   align-content: center;
   justify-content: center;
 }
 
-.boton_empezar {
+h2{
+  color: #003049;
+}
+
+.boton_naranja {
   background-color: #ea8c2f;
   border-color: #ea8c2f;
   border-radius: 20px;
   text-decoration: solid;
   font: bold;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-family: inherit;
+  color: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.25s;
 }
 
-.boton_empezar:hover {
+.boton_naranja:hover {
   border-color: #003049;
   outline: none;
   border-width: 2px;
 }
 
-.boton_empezar:active {
+.boton_naranja:active {
   border-color: #003049;
   outline: none;
 }
 
-.boton_empezar:focus{
+.boton_naranja:focus{
   outline: none;
+}
+
+.boton_rojo {
+  background-color: #d62828;
+  color: #ffffff;
+  border-color: #d62828;
+  cursor: pointer;
+  border-radius: 20px;
+  text-decoration: solid;
+  font: bold;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-family: inherit;
+}
+
+.boton_rojo:hover {
+  background-color: #ff4040;
+  color: #ffffff;
 }
 
 h2 {
   text-align: left;
+  color: #003049;
 }
 
 .foto {
+  width: 100%;
   max-width: 450px;
+}
+
+input {
+  width: 290px;
+  height: 30px;
+  border-color: #003049;
+  color: #003049;
+}
+
+select{
+  width: 305px;
+  height: 52px;
+  border-radius: 5px;
+  border-color: #003049;
+  color: #003049;
 }

@@ -1,0 +1,75 @@
+.invitation-section {
+    background-color: #e7ebed;
+    width: 40%;
+    max-width: 400px;
+    max-height: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0%;
+    margin-top: 5%;
+    border-radius: 10px;
+    border: 1px solid #e4e5e6;
+    overflow-y: auto; 
+    white-space: wrap;
+}
+
+.invitation-section {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+.invitation-section h3 {
+    font-size: 18px;
+    color: #002c4a;
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.invitation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.invitation p {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.accept, .reject, .warning {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.accept {
+    color: green;
+}
+
+.reject {
+    color: red;
+}
+
+.note {
+    font-size: 11px;
+    color: #003049;
+    text-align: left;
+    font-weight: 600;
+    margin: 0px;
+}
+
+.invitation button img{
+    width: 25px;
+    height: 25px;
+    border-radius: 25px;
+}

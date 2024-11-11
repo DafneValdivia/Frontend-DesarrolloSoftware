@@ -1,0 +1,18 @@
+.group-card {
+    width: 100%;
+    border: 1px solid #003049; 
+    border-radius: 8px; 
+    padding: 16px; 
+    cursor: pointer; 
+    background-color: #f9f9f9;
+    margin-bottom: 1%;
+    box-sizing: border-box;
+}
+
+.group-card:hover {
+    background-color: #002f4926;
+}
+
+.group-name {
+    text-align: left;
+}

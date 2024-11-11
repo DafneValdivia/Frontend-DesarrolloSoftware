@@ -2,6 +2,7 @@ import './App.css'
 import foto from './assets/fotoLanding.png'
 import axios from 'axios'
 import { useState } from 'react'
+import NavBar from './components/Navbar'
 
 function App() {
 
@@ -19,11 +20,12 @@ function App() {
 
   return (
     <>
+    <NavBar />
       <div className='card'>
         <div className="left_card">
         <h1>PuduPay</h1>
         <h2>Divide y lleva la cuenta de gastos compartidos de la manera más fácil</h2>
-          <button className='boton_empezar' onClick={handleButtonClick}>
+          <button className='boton_naranja' onClick={handleButtonClick}>
             Empieza ahora
           </button>
         </div>

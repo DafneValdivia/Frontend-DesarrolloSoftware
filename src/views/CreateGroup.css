@@ -1,0 +1,8 @@
+.createGroup-page-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* o center */
+    width: 100%;
+    /* padding: 10px;
+    margin: 20px; */
+}

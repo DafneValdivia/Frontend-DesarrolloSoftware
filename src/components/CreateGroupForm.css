@@ -1,0 +1,158 @@
+.create-group-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    background-color: #ffffff;
+    padding: 20px;
+    border: 2.5px solid #003049;
+    max-width: 400px;
+    margin: auto;
+    margin-top: 5%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  }
+  
+  h2 {
+    color: #003049; /* == rgb(0, 48, 73)  */
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  input {
+    width: 95%;
+    padding: 10px;
+    border: 1px solid rgba(0, 48, 73, 0.7);
+    border-radius: 4px;
+    color: #003049;
+  }
+  
+  
+  button {
+    cursor: pointer;
+    border: none;    
+  }
+
+  button:active{
+    transform: scale(0.97); /* Reduce ligeramente el tamaño para simular un clic */
+  }
+  
+  #create-group-button {
+    background-color: #ea8c2f; /* == rgb(234, 140, 47); */
+    padding: 10px 20px;
+    border-radius: 25px;
+    color: #fff;
+    height: 50px;
+    width: 62.5%;
+    max-width: 250px;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+  
+  #create-group-button:hover{
+    background-color: rgba(234, 140, 47, 0.8);
+  }
+
+  
+  #add-member-div {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+  }
+
+
+  p {
+    font-size: 13px;
+    color: black;
+    font-weight: 500;
+    padding-left: 10px;
+  }
+
+
+#add-member-button {
+  margin-left: 2px;
+  background-color: #003049;
+  color: #ffffff;
+  border-radius: 25px;
+  width: 50px;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#add-member-button:hover {
+  background-color: #00517c;
+}
+
+
+#add-member-button:active{
+  transform: scale(0.97); /* Reduce ligeramente el tamaño para simular un clic */
+  font-size: 21px;
+  padding: 10px;
+}
+
+.member-added {
+    width: 100%;
+}
+
+h3 {
+    font-weight: bold;
+    font-size: small;
+    margin: 13px 0px 0px 0px;
+}
+
+.show-members {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+ul {
+   justify-content: flex-start;
+   width: 95%;
+   padding: 0%;
+   list-style: none;
+   margin: 0%;
+
+
+}
+li {
+    background-color: #f3f3f3;
+    width: 80%;
+    padding: 8px;
+    font-size: 13px;
+    color: #003049;
+    font-weight: 480;
+    justify-content: space-between;
+}
+
+li:hover {
+    background-color: #003049;
+    color: #ffffff;
+}
+
+.suggestion-email {
+    color: gray; /* Cambia el color del correo electrónico */
+    font-style: italic; /* Aplica cursiva al correo */
+    font-size: 0.9em;
+}
+
+.X-button {
+    background-color: #d62828;
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 15px;
+    height: 30px;
+    width: 30px;
+    border-radius: 25px;
+    visibility: hidden; /* Ocultar por defecto */
+}
+
+.show-members:hover .X-button {
+    visibility: visible; /* Mostrar solo en hover */
+}

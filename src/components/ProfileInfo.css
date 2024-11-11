@@ -1,0 +1,94 @@
+.profile-info {
+    width: 40%;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    max-width: 80%;
+}
+
+.edit-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: red ; 
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #ff6644;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    max-width: 80%;
+}
+
+/* Estilos para los botones dentro del modal */
+.modal-content button[type="submit"],
+.modal-content button[type="button"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.modal-content button[type="submit"] {
+    background-color: #040a5c; /* Verde para guardar cambios */
+    color: white;
+}
+
+.modal-content button[type="button"] {
+    background-color: #dc3545; /* Rojo para cancelar */
+    color: white;
+}
+
+/* Efecto hover para los botones del modal */
+.modal-content button[type="submit"]:hover {
+    background-color: #040a8c;
+    transform: scale(1.05);
+}
+
+.modal-content button[type="button"]:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
