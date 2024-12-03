@@ -54,9 +54,10 @@ export default function YourGroups() {
     };
 
     // Nueva función para manejar la navegación a GroupBalance con groupId
-    const handleGroupCardClick = (groupId) => {
-        navigate(`/group/${groupId}`);
+    const handleGroupCardClick = (groupId, groupName) => {
+        navigate(`/group/${groupId}`, { state: { groupName } });
     };
+    
 
     return (
         <div>
@@ -78,7 +79,7 @@ export default function YourGroups() {
                                 <GroupCard 
                                     key={group.id} 
                                     groupName={group.name} 
-                                    onClick={() => handleGroupCardClick(group.id)} 
+                                    onClick={() => handleGroupCardClick(group.id, group.name)} 
                                 />
                             ))
                         ) : (

@@ -26,16 +26,26 @@ th, td {
 .estado-pendiente {
     background-color: #ef9393;
     color: #003049;
+    width: 200px;
+    
 }
 
 .estado-pagado {
     background-color: #b2e4aa;
     color: #003049;
+    width: 200px;
 }
 
 .estado-en-proceso {
     background-color: #f6ce7e;
     color: #003049;
+    width: 200px;
+}
+
+.estado-cancelada {
+    background-color: #b2a9a9;
+    color: #003049;
+    width: 200px;
 }
 
 .filters{
@@ -53,3 +63,54 @@ th, td {
     flex-direction: row;
     width: 300px;
 }
+
+/* Estilo de los botones */
+.button_header {
+    border: none;
+    border-radius: 4px;
+    background-color: transparent;
+    color: #003049;
+    cursor: pointer;
+    font-size: 18px;
+    transition: color 0.2s;
+    font-weight: 500;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+  
+  /* Estilo para el botón activo */
+  .activeButton {
+    text-decoration: underline;
+    font-weight: 700;
+    color: #f77f00;
+  }
+
+  .title_group{
+      color:#003049;
+      border-radius: 10px;
+      width: auto;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+  }
+
+  .left_side{
+      display: flex;
+      padding-left: 150px;
+      width: 500px;
+  }
+
+  .dropdown_state{
+      background-color: transparent;
+      border: none;
+      width: 200px;
+      font-size: large;
+  }
+
+  .dropdown_state:focus{
+    outline: none;
+  }
