@@ -43,6 +43,18 @@
   align-items: center;
 }
 
+#new-group {
+  display: flex;
+  align-items: center;
+  margin-top: 5%;
+  align-self: flex-end;
+  width: 12%;
+}
+
+#new-group-text {
+  margin-right: 2%;
+}
+
 #new-group-button {
   background-color: #003049;
   color: #ffffff;
@@ -52,15 +64,13 @@
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
-  position: absolute;
-  right: 5%;
-  bottom: 8%;
+  align-self: flex-end;
+  margin-bottom: 2%;
 }
 
 #new-group-button:hover {
   background-color: #00517c;
 }
-
 
 #new-group-button:active{
   transform: scale(0.97); /* Reduce ligeramente el tamaño para simular un clic */

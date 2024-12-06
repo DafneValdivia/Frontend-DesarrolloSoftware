@@ -62,9 +62,12 @@ export default function YourGroups() {
         <div>
             <Navbar />
             <div id="groups-container">
-                <button id="new-group-button" onClick={handleNewGroupClick}>
-                    +
-                </button>
+                <div id="new-group">
+                    <div id="new-group-text">Nuevo grupo</div>
+                    <button id="new-group-button" onClick={handleNewGroupClick}>
+                        +
+                    </button>
+                </div>
                 <input
                     id="search-bar"
                     type="text"

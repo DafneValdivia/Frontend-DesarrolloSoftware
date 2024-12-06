@@ -1,22 +1,23 @@
 import './App.css'
 import foto from './assets/fotoLanding.png'
-import axios from 'axios'
-import { useState } from 'react'
 import NavBar from './components/Navbar'
+import { useAuth0 } from '@auth0/auth0-react'
+import { useNavigate } from 'react-router-dom'
 
 function App() {
 
-  const [data, setData] = useState('')
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
 
-  const handleButtonClick = async () => {
-    try {
-      const response = await axios.get('https://pudupay-backend.onrender.com')
-      // console.log(response.data)
-      setData(response.data)
-    } catch (error) {
-      console.error(error)
+  const handleButtonClick = () => {
+    if (isAuthenticated) {
+      // Si está autenticado, redirige a /yourgroups
+      navigate('/yourgroups');
+    } else {
+      // Si no está autenticado, redirige al inicio de sesión
+      loginWithRedirect();
     }
-  }
+  };
 
   return (
     <>
@@ -32,7 +33,6 @@ function App() {
         <div className='right_card'>
           <img src={foto} className="foto" alt="Foto" />
         </div>
-        <h2>{data}</h2>
       </div>
     </>
   )
