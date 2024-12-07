@@ -15,7 +15,6 @@ function App() {
 
   const checkNewUser = async () => {
     try {
-      console.log(token);
       if (token) {
         await axios.post(`${import.meta.env.VITE_SERVER_URL}/users/create`, {}, {
           headers: {
@@ -41,7 +40,6 @@ function App() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log("HOLAAA");
       const getTokenAndCheckUser = async () => {
         await fetchToken();
         checkNewUser();
