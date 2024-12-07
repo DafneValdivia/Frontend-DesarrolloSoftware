@@ -9,7 +9,7 @@ export default function Popup({ groupId, onClose }) {
   const [amount, setAmount] = useState("");
   const [creditor, setCreditor] = useState("");
   const serverUrl = import.meta.env.VITE_SERVER_URL;
-  const { user, isAuthenticated } = useAuth0(); // Obtener el user_id del usuario autenticado
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0(); // Obtener el user_id del usuario autenticado
   const [alertMessage, setAlertMessage] = useState(null);  // Para manejar la alerta
   const [alertType, setAlertType] = useState(''); // Para el tipo de alerta (éxito o error)
   const [usuarios, setUsuarios] = useState([]);
@@ -42,14 +42,15 @@ export default function Popup({ groupId, onClose }) {
   //     }
   // };
 
-    // useEffect(() => {
-    //     fetchData();
-    // }, [isAuthenticated, user]);
+  // useEffect(() => {
+  //     fetchData();
+  // }, [isAuthenticated, user]);
 
 
   const postData = async () => {
     try {
       if (isAuthenticated) {
+        const token = await getAccessTokenSilently();
         await axios.post(`${serverUrl}/transactions/create`,
           {
             "groupId": groupId,
@@ -58,7 +59,11 @@ export default function Popup({ groupId, onClose }) {
             "amount": amount,
             "payer_id": user
           },
-          { withCredentials: true }) // Ruta del back para crear transacción
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+            }
+          }); // Ruta del back para crear transacción
       }
       onClose();
     } catch (error) {

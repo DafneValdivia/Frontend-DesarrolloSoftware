@@ -19,35 +19,46 @@ const GroupBalance = () => {
     const [deudas, setDeudas] = useState([]);
     const [balanceData, setBalanceData] = useState([]);
     const [membersData, setMembersData] = useState([]);
-    const { user, isAuthenticated } = useAuth0();
+    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
     const fetchData = async () => {
         try {
+            const token = await getAccessTokenSilently();
             const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/transactions/group/${groupId}`, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             }) // Ruta del back para obtener deudas segun el id del grupo
             console.log("Transacciones:", response.data);
             setTransactions(response.data);
 
             const response_debts = await axios.get(`${import.meta.env.VITE_SERVER_URL}/debts/${groupId}`, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             })
             console.log("Deudas:", response_debts.data);
             setDeudas(response_debts.data);
 
             const response_balance = await axios.get(`${import.meta.env.VITE_SERVER_URL}/balance/${groupId}`, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             })
             console.log("Balance:", response_balance.data);
             setBalanceData(response_balance.data);
 
             const response_members = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/members`, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             })
             console.log("Miembros:", response_members.data);
 
             const response_users = await axios.get(`${import.meta.env.VITE_SERVER_URL}/users`, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             })
             console.log("Users:", response_users.data);
 
@@ -109,10 +120,13 @@ const GroupBalance = () => {
 
     const handleStateChange = async (debt, newState) => {
         try {
+            const token = await getAccessTokenSilently();
             await axios.put(`${import.meta.env.VITE_SERVER_URL}/debts/${debt.debt_id}`, {
                 state: newState,
             }, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             });
             console.log("enviado");
             fetchData(); // Recarga los datos después de actualizar
