@@ -8,7 +8,7 @@ import { useAuth0 } from "@auth0/auth0-react"; // Si estás usando Auth0
 
 const ContactField = ({ contactos }) => {
     const [contactList, setContactList] = useState(contactos);
-    const { user, isAuthenticated } = useAuth0(); // Obtener el user_id del usuario autenticado
+    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0(); // Obtener el user_id del usuario autenticado
     const [isEditing, setIsEditing] = useState(false);
     const navigate = useNavigate();
     const serverUrl = import.meta.env.VITE_SERVER_URL;
@@ -23,8 +23,11 @@ const ContactField = ({ contactos }) => {
             // Crear una nueva lista sin el contacto eliminado
             const updatedContacts = contactList.filter((_, i) => i !== index);
             setContactList(updatedContacts);
+            const token = await getAccessTokenSilently();
             await axios.delete(`${serverUrl}/contacts/${user.email}/${mail_contacto}`, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             });
             // Aquí podrías enviar la lista actualizada al componente padre si es necesario
         } catch (error) {

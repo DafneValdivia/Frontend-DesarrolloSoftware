@@ -15,6 +15,8 @@ export default function Popup({ onClose, groupId }) {
 
   const serverUrl = import.meta.env.VITE_SERVER_URL;
 
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0(); // Obtener el user_id del usuario autenticado
+
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
@@ -150,6 +152,7 @@ export default function Popup({ onClose, groupId }) {
     if (!validateDebtDetails()) return;
 
     try {
+
       const creditor = groupMembers.find(member => member.member_id === selectedCreditor);
 
       if (!creditor) {
@@ -174,6 +177,7 @@ export default function Popup({ onClose, groupId }) {
             amount: Number(debt.amount.replace(/\./g, ''))
           }));
 
+      const token = await getAccessTokenSilently();
       await axios.post(`${serverUrl}/transactions/create`, {
         groupId: groupId,
         title: titulo,
@@ -182,7 +186,10 @@ export default function Popup({ onClose, groupId }) {
         email: userEmail, // Email del prestador seleccionado
         dueDate: "2024-12-31", // Ajustar la fecha de vencimiento según sea necesario
         debtsArray: debtsArray
-      }, { withCredentials: true });
+      }, { headers: {
+              Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+            }
+       });
 
       onClose();
     } catch (error) {
