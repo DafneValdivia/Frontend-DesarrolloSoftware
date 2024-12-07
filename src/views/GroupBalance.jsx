@@ -19,6 +19,7 @@ const GroupBalance = () => {
     const [deudas, setDeudas] = useState([]);
     const [balanceData, setBalanceData] = useState([]);
     const [membersData, setMembersData] = useState([]);
+    const [paymentsData, setPaymentsData] = useState([]);
     const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
     const fetchData = async () => {
@@ -47,6 +48,12 @@ const GroupBalance = () => {
             })
             console.log("Balance:", response_balance.data);
             setBalanceData(response_balance.data);
+
+            const response_payments = await axios.get(`${import.meta.env.VITE_SERVER_URL}/payments/${groupId}`, {
+                withCredentials: true
+            })
+            console.log("Pagos:", response_payments.data);
+            setPaymentsData(response_payments.data);
 
             const response_members = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/members`, {
                 headers: {
@@ -102,11 +109,19 @@ const GroupBalance = () => {
     const [searchDeudor, setSearchDeudor] = useState(""); // Estado para buscar deudor
     const [searchPrestador, setSearchPrestador] = useState(""); // Estado para buscar prestador
     const [filter, setFilter] = useState("todos");
-    const filteredBalances = deudas.filter((deuda) => {
-        const matchesFilter = filter === "todos" || deuda.state === filter;
-        const matchesDeudor = searchDeudor === "" || deuda.debtor_name.username.toString().toLowerCase().includes(searchDeudor.toLowerCase());
-        const matchesPrestador = searchPrestador === "" || deuda.creditor_name.username.toLowerCase().includes(searchPrestador.toLowerCase());
-        return matchesFilter && matchesDeudor && matchesPrestador;
+    // const filteredBalances = deudas.filter((deuda) => {
+    //     const matchesFilter = filter === "todos" || deuda.state === filter;
+    //     const matchesDeudor = searchDeudor === "" || deuda.debtor_name.username.toString().toLowerCase().includes(searchDeudor.toLowerCase());
+    //     const matchesPrestador = searchPrestador === "" || deuda.creditor_name.username.toLowerCase().includes(searchPrestador.toLowerCase());
+    //     return matchesFilter && matchesDeudor && matchesPrestador;
+    // });
+    // const sortedBalances = [...filteredBalances].sort((a, b) => a.deuda_id - b.deuda_id);
+
+    const filteredBalances = balanceData.filter((deuda) => {
+    //  const matchesFilter = filter === "todos" || deuda.state === filter;
+        const matchesDeudor = searchDeudor === "" || deuda.fromName.toString().toLowerCase().includes(searchDeudor.toLowerCase());
+        const matchesPrestador = searchPrestador === "" || deuda.toName.toLowerCase().includes(searchPrestador.toLowerCase());
+        return matchesDeudor && matchesPrestador;
     });
     const sortedBalances = [...filteredBalances].sort((a, b) => a.deuda_id - b.deuda_id);
 
@@ -144,7 +159,7 @@ const GroupBalance = () => {
             </div>
             
             <div className='filters'>
-                <button className={`button_header ${option === 'deudas' ? 'activeButton' : ''}`} onClick={() => setOption('deudas')}>Deudas</button>
+                {/* <button className={`button_header ${option === 'deudas' ? 'activeButton' : ''}`} onClick={() => setOption('deudas')}>deudas</button> */}
                 <button className={`button_header ${option === 'balance' ? 'activeButton' : ''}`} onClick={() => setOption('balance')}>Balance Grupal</button>
                 <button className={`button_header ${option === 'historial' ? 'activeButton' : ''}`} onClick={() => setOption('historial')}>Historial de Gastos ingresados</button>
                 <button className={`button_header ${option === 'pagos' ? 'activeButton' : ''}`} onClick={() => setOption('pagos')}>Historial de Pagos realizados</button>
@@ -173,53 +188,8 @@ const GroupBalance = () => {
                 </div>
             )}
 
-            {option === "deudas" && (
+            {/* {option === "deudas" && (
                 <div>
-                    <div className="filters">
-                        {/* Filtrar por estado */}
-
-                        <div className="filter">
-                            <label className='label_filter'>Filtrar por estado:</label>
-                            <select
-                                id="filter"
-                                value={filter}
-                                onChange={(e) => setFilter(e.target.value)} // Actualizar el filtro al cambiar
-                            >
-                                <option value="todos">Todos</option>
-                                <option value="Pagada">Pagada</option>
-                                <option value="Por confirmar">Por confirmar</option>
-                                <option value="No pagada">No pagada</option>
-                                <option value="Cancelada">Cancelada</option>
-                            </select>
-                        </div>
-
-
-                        {/* Buscar Deudor */}
-
-                        <div className="filter">
-                            <label className='label_filter'>Buscar Deudor:</label>
-                            <input
-                                type="text"
-                                placeholder="Ej. 1"
-                                value={searchDeudor}
-                                onChange={(e) => setSearchDeudor(e.target.value)}
-                            />
-                        </div>
-
-
-                        {/* Buscar Prestador */}
-
-                        <div className="filter">
-                            <label className="label_filter">Buscar Prestador:</label>
-                            <input
-                                type="text"
-                                placeholder="Ej. Persona A"
-                                value={searchPrestador}
-                                onChange={(e) => setSearchPrestador(e.target.value)}
-                            />
-                        </div>
-
-                    </div>
 
                     <table>
                         <thead>
@@ -231,7 +201,7 @@ const GroupBalance = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {sortedBalances.map((deuda) => (
+                            {deudas.map((deuda) => (
                                 <tr key={deuda.id}>
                                     <td className={getStateClass(deuda.state)}>
                                         {deuda.debtor_name?.mail === user?.email || deuda.creditor_name?.mail === user?.email ? (
@@ -264,23 +234,20 @@ const GroupBalance = () => {
                                         <span>{deuda.state}</span>
                                     )}
                                     </td>
-                                    <td>{deuda.debtor_name?.username || "Desconocido"}</td>  {/* Asegúrate de que deudor_name existe */}
-                                    <td>{deuda.creditor_name?.username || "Desconocido"}</td>  {/* Asegúrate de que creditor_name existe */}
+                                    <td>{deuda.debtor_name?.username || "Desconocido"}</td> 
+                                    <td>{deuda.creditor_name?.username || "Desconocido"}</td>  
                                     <td>{deuda.amount}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-                    <RoundButton
-                        onClick={(e) => setPopUp("on")}
-                        altText="Agregar deuda" // Texto alternativo
-                    />
-                </div>)}
+                    
+                </div>)} */}
 
 
             {option === "balance" && (
             <div>
-                {/* <div className="filters">
+                <div className="filters">
                     <div className="filter">
                         <label className='label_filter'>Filtrar por estado:</label>
                         <select
@@ -317,7 +284,7 @@ const GroupBalance = () => {
                             />
                         </div>
 
-                    </div> */}
+                    </div>
 
                     <table>
                         <thead>
@@ -329,7 +296,7 @@ const GroupBalance = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {balanceData.map((deuda) => (
+                            {sortedBalances.map((deuda) => (
                                 <tr key={deuda.id}>
                                     <td className={getStateClass(deuda.state)}>
                                         {deuda.debtor_name?.mail === user?.email || deuda.creditor_name?.mail === user?.email ? (
@@ -369,10 +336,10 @@ const GroupBalance = () => {
                             ))}
                         </tbody>
                     </table>
-                    {/* <RoundButton
+                    <RoundButton
                         onClick={(e) => setPopUp("on")}
                         altText="Agregar deuda" // Texto alternativo
-                    /> */}
+                    />
                 </div>)}
 
             {option === "pagos" && (
