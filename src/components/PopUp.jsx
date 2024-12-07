@@ -78,24 +78,28 @@ export default function Popup({ onClose, groupId }) {
     const total = Number(totalAmount.replace(/\./g, ''));
     const allMembers = groupMembers;
     const numMembers = allMembers.length;
-
+  
     if (numMembers === 0) {
       setEqualSplitDetails([]);
       return;
     }
-
-    const baseAmount = Math.floor(total / numMembers);
-    const remainder = total - baseAmount * numMembers;
-
-    const splitDetails = allMembers.map((member, index) => ({
+  
+    const baseAmount = Math.ceil(total / numMembers); // Redondear hacia arriba
+  
+    // Generar los detalles de la división
+    const splitDetails = allMembers.map((member) => ({
       id: member.user_id, // Usar `user_id` para el estándar
       name: member.username,
-      amount: (index === 0 ? baseAmount + remainder : baseAmount).toLocaleString("es-CL")
+      amount: baseAmount.toLocaleString("es-CL")
     }));
-
+  
     setEqualSplitDetails(splitDetails);
+  
+    // Actualizar `debtDetails` con los IDs y montos
     setDebtDetails(splitDetails.map(({ id, amount }) => ({ id, amount })));
   };
+  
+  
 
   const handleCheckboxChange = (checked) => {
     setDivideEqually(checked);
@@ -123,10 +127,6 @@ export default function Popup({ onClose, groupId }) {
         (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
         0
       );
-      if (totalSplitAmount !== Number(amount.replace(/\./g, ''))) {
-        alert("La suma de las deudas divididas debe ser igual al monto total");
-        return false;
-      }
       return true;
     }
 
