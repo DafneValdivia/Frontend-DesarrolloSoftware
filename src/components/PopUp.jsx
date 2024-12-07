@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import './PopUp.css';
 import '../App.css';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Popup({ onClose, groupId }) {
   const [titulo, setTitulo] = useState("");
@@ -20,15 +21,22 @@ export default function Popup({ onClose, groupId }) {
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
+        const token = await getAccessTokenSilently();
         const groupMembersResponse = await axios.get(`${serverUrl}/groups/${groupId}/members`, {
-          withCredentials: true
+          headers: {
+            Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+          }
         });
         setGroupMembers(groupMembersResponse.data);
 
         const usersResponse = await axios.get(`${serverUrl}/users`, {
-          withCredentials: true
+          headers: {
+            Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+          }
         });
         setUsers(usersResponse.data);
+        console.log(groupMembers);
+        console.log(users)
       } catch (error) {
         console.error("Error fetching data", error);
       }
