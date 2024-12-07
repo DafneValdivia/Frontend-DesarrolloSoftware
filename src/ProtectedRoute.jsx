@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import './ProtectedRoute.css';
 
-const ProtectedRoute = ({ children }) => {
+export default function ProtectedRoute ({ children }) {
     const { isAuthenticated, isLoading } = useAuth0();
 
     // Muestra un indicador de carga mientras verifica el estado de autenticación
@@ -25,5 +25,3 @@ const ProtectedRoute = ({ children }) => {
     // Si está autenticado, renderiza la ruta protegida
     return children;
 };
-
-export default ProtectedRoute;

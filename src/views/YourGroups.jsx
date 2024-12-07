@@ -24,7 +24,7 @@ export default function YourGroups() {
             try {
                 if (isAuthenticated && user) {
                     setLoading(true);
-                    const response = await axios.get(`http://localhost:3000/groups/user/${user.email}/`, {
+                    const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/user/${user.email}/`, {
                         withCredentials: true
                     });
                     console.log("Grupos cargados:", response.data);
