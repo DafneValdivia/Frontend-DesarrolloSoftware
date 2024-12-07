@@ -30,14 +30,21 @@ const AddContactForm = ({ contactos, onContactAdded }) => {
         const selectedContact = contactList.find(contacto =>
             contacto.mail === newContactEmail
         );
-
+    
+        // Verificar si el contacto ya existe en la lista
+        const contactAlreadyAdded = contactList.some(contacto => 
+            contacto.mail === newContactEmail
+        );
+    
         if (!selectedContact) {
-            alert("Este contacto no existe. Puedes hacerle una invitación para que se una a esta maravillosa aplicación :D!");
+            alert("Este usuario no existe. Prueba añadir un usuario existente.");
+        } else if (contactAlreadyAdded) {
+            alert("Este contacto ya se encuentra en tu lista de contactos.");
         } else {
             onContactAdded(selectedContact);
             setSuggestions([]);
         }
-
+    
         setNewContactEmail("");
     };
 

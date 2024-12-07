@@ -4,7 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import './ProfileInfo.css';
 
 const ProfileInfo = () => {
-    const { user, isAuthenticated } = useAuth0();
+    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,8 +16,11 @@ const ProfileInfo = () => {
             if (!user || !user.email) return;
 
             try {
+                const token = await getAccessTokenSilently();
                 const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/users/${user.email}`, {
-                    withCredentials: true
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                    }
                 });
                 setProfileData(response.data);
                 setEditData({ username: response.data.username, phone: response.data.phone });
@@ -41,8 +44,11 @@ const ProfileInfo = () => {
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         try {
+            const token = await getAccessTokenSilently();
             await axios.put(`${import.meta.env.VITE_SERVER_URL}/users/profile`, editData, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             });
             setProfileData({ ...profileData, ...editData });
             setIsEditModalOpen(false);

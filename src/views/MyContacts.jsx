@@ -67,14 +67,21 @@ export default function MyContacts() {
     const { user, isAuthenticated } = useAuth0(); // Obtener el user_id del usuario autenticado
     const [contactosExistentes, setContactosExistentes] = useState([]);
     const [misContactos, setMisContactos] = useState([]);
+    const { getAccessTokenSilently } = useAuth0();
 
     const serverUrl = import.meta.env.VITE_SERVER_URL;
     const fetchContactos = async () => {
         try {
+            const token = await getAccessTokenSilently();
+            console.log(user);
+            console.log(token);
             // Solicitud para obtener todos los contactos existentes
             const responseExistentes = await axios.get(`${serverUrl}/users/`, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             });
+
             setContactosExistentes(responseExistentes.data);
             console.log("Usuarios existentes: ", responseExistentes.data);
 
@@ -82,7 +89,9 @@ export default function MyContacts() {
             // Solicitud para obtener mis contactos solo si el usuario está autenticado
             if (isAuthenticated && user) {
                 const responseMisContactos = await axios.get(`${serverUrl}/contacts/user/${user.email}/`, {
-                    withCredentials: true
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                    }
                 });
                 setMisContactos(responseMisContactos.data);
             }
@@ -92,11 +101,14 @@ export default function MyContacts() {
     };
 
     useEffect(() => {
-        fetchContactos();
+        if (isAuthenticated) {
+            fetchContactos();
+        }
     }, [isAuthenticated, user]); // Ejecutar cuando el usuario esté autenticado
 
     const handleAddContact = async (contactData) => {
         try {
+            const token = await getAccessTokenSilently();
             // Crear el nuevo contacto en el servidor
             await axios.post(
                 `${serverUrl}/contacts/create`,
@@ -104,7 +116,11 @@ export default function MyContacts() {
                     user_mail: user.email,
                     contact_mail: contactData.mail
                 },
-                { withCredentials: true }
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                    }
+                }
             );
 
             // Actualizar misContactos localmente
