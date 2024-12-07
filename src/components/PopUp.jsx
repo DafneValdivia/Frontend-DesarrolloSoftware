@@ -4,7 +4,7 @@ import '../App.css'
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react"; // Si estás usando Auth0
 
-export default function Popup({ onClose, groupId }) {
+export default function Popup({ groupId, onClose }) {
   const [titulo, setTitulo] = useState("");
   const [amount, setAmount] = useState("");
   const [creditor, setCreditor] = useState("");
@@ -14,36 +14,37 @@ export default function Popup({ onClose, groupId }) {
   const [alertType, setAlertType] = useState(''); // Para el tipo de alerta (éxito o error)
   const [usuarios, setUsuarios] = useState([]);
 
-  const fetchData = async () => {
-      try {
-        const response_members = await axios.get(`http://localhost:3000/groups/${groupId}/members`, {
-                withCredentials: true
-            })
-            //console.log("Miembros:", response_members.data);
-            const response_users = await axios.get(`http://localhost:3000/users`, {
-                withCredentials: true
-            })
-            //console.log("Users:", response_users.data);
+  // const fetchData = async () => {
+  //     try {
+  //       const response_members = await axios.get(`http://localhost:3000/groups/${groupId}/members`, {
+  //               withCredentials: true
+  //           })
+  //           //console.log("Miembros:", response_members.data);
+  //           const response_users = await axios.get(`http://localhost:3000/users`, {
+  //               withCredentials: true
+  //           })
+  //           //console.log("Users:", response_users.data);
 
-            // Asocia información de usuarios con los miembros
-            const enrichedMembers = response_members.data.map((member) => {
-                const user = response_users.data.find((u) => u.id === member.user_id);
-                return {
-                    ...member,
-                    username: user?.username || "Desconocido",
-                    mail: user?.mail || "Sin correo",
-                    phone: user?.phone || "Sin número de teléfono",
-                };
-            });
-          setUsuarios(enrichedMembers);
+  //           // Asocia información de usuarios con los miembros
+  //           const enrichedMembers = response_members.data.map((member) => {
+  //               const user = response_users.data.find((u) => u.id === member.user_id);
+  //               return {
+  //                   ...member,
+  //                   username: user?.username || "Desconocido",
+  //                   mail: user?.mail || "Sin correo",
+  //                   phone: user?.phone || "Sin número de teléfono",
+  //               };
+  //           });
+  //         setUsuarios(enrichedMembers);
 
-      } catch (error) {
-          console.error("Error al obtener Transacciones", error);
-      }
-  };
-    useEffect(() => {
-        fetchData();
-    }, [isAuthenticated, user]);
+  //     } catch (error) {
+  //         console.error("Error al obtener usuarios", error);
+  //     }
+  // };
+
+    // useEffect(() => {
+    //     fetchData();
+    // }, [isAuthenticated, user]);
 
 
   const postData = async () => {
@@ -53,14 +54,13 @@ export default function Popup({ onClose, groupId }) {
           {
             "groupId": groupId,
             "title": titulo,
-            "state": "No pagada",
+            //"state": "No pagada",
             "amount": amount,
-            "email": creditor
+            "payer_id": user
           },
           { withCredentials: true }) // Ruta del back para crear transacción
       }
       onClose();
-      console.log({creditor})
     } catch (error) {
       console.error("Error al crear Transacciones", error);
     }
@@ -73,6 +73,8 @@ export default function Popup({ onClose, groupId }) {
       const formatted = Number(input).toLocaleString("es-CL"); // Formato con separador de miles
       setAmount(formatted);
     }
+    console.log(`monto: ${amount}`);
+    console.log(`user: ${user.id}`);
   };
 
   return (
@@ -94,7 +96,7 @@ export default function Popup({ onClose, groupId }) {
             value={amount}
             onChange={handleAmountChange} //
           />
-          <label> <strong>Prestador / Pagado por:</strong> </label>
+          {/* <label> <strong>Prestador / Pagado por:</strong> </label>
           <input
             type="text"
             list="members"
@@ -106,7 +108,7 @@ export default function Popup({ onClose, groupId }) {
             {usuarios.map((usuario, index) => (
               <option key={index} value={usuario.mail}>{usuario.username}</option>
             ))}
-          </datalist>
+          </datalist> */}
         </div>
         <div className='popup-actions'>
           <button onClick={onClose} className="boton_rojo">Cerrar</button>
