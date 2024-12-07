@@ -1,40 +1,160 @@
 .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .popup-content {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 5px;
-    width: 300px;
-    max-width: 100%;
-    height: 100%;
-    max-height: 380px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
 
-  .popup-actions{
-    padding-top: 20px;
-    justify-content: space-between;
-    display: flex;
-  }
+.popup-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 550px;
+  max-width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  text-align: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 
-  .popup-body{
-    display: flex;
-    flex-direction: column; /* Ordena los elementos en columna */
-    gap: 10px; /* Espacio entre cada label-input */
-    align-items: flex-start; /* Alinea al inicio de cada fila */
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
+.popup-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.popup-body label {
+  font-weight: 600;
+  color: #333;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.input-with-prefix {
+  position: relative;
+  width: 100%;
+}
+
+.input-with-prefix .prefix {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+.input-with-prefix .input-field {
+  padding-left: 25px;
+}
+
+.debt-detail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.debt-detail select {
+  flex: 2;
+}
+
+.debt-detail .input-with-prefix {
+  flex: 1.5;
+  display: flex;
+  align-items: center;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.add-button, .remove-button, .submit-button, .cancel-button {
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.add-button:hover {
+  background-color: #45a049;
+}
+
+.remove-button {
+  flex: 0.6;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  height: 100%;
+}
+
+.remove-button:hover {
+  background-color: #d32f2f;
+}
+
+.submit-button {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+}
+
+.submit-button:hover {
+  background-color: #1976D2;
+}
+
+.cancel-button {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.checkbox-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+
+#divide-equally {
+  flex: 0.3
+}
+
+.equal-split-details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#equal-amounts-li {
+  width: 100%;
+}
