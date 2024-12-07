@@ -16,7 +16,7 @@ const ProfileInfo = () => {
             if (!user || !user.email) return;
 
             try {
-                const response = await axios.get(`http://localhost:3000/users/${user.email}`, {
+                const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/users/${user.email}`, {
                     withCredentials: true
                 });
                 setProfileData(response.data);
@@ -41,7 +41,7 @@ const ProfileInfo = () => {
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:3000/users/profile`, editData, {
+            await axios.put(`${import.meta.env.VITE_SERVER_URL}/users/profile`, editData, {
                 withCredentials: true
             });
             setProfileData({ ...profileData, ...editData });

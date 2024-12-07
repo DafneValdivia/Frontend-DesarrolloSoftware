@@ -24,7 +24,7 @@ export default function YourGroups() {
             try {
                 if (isAuthenticated && user) {
                     setLoading(true);
-                    const response = await axios.get(`http://localhost:3000/groups/user/${user.email}/`, {
+                    const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/user/${user.email}/`, {
                         withCredentials: true
                     });
                     console.log("Grupos cargados:", response.data);
@@ -63,9 +63,12 @@ export default function YourGroups() {
         <div>
             <Navbar />
             <div id="groups-container">
-                <button id="new-group-button" onClick={handleNewGroupClick}>
-                    +
-                </button>
+                <div id="new-group">
+                    <div id="new-group-text">Nuevo grupo</div>
+                    <button id="new-group-button" onClick={handleNewGroupClick}>
+                        +
+                    </button>
+                </div>
                 <input
                     id="search-bar"
                     type="text"

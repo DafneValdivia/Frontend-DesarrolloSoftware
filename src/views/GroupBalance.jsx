@@ -23,13 +23,13 @@ const GroupBalance = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:3000/transactions/group/${groupId}`, {
+            const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/transactions/group/${groupId}`, {
                 withCredentials: true
             }) // Ruta del back para obtener deudas segun el id del grupo
             console.log("Transacciones:", response.data);
             setTransactions(response.data);
 
-            const response_debts = await axios.get(`http://localhost:3000/debts/${groupId}`, {
+            const response_debts = await axios.get(`${import.meta.env.VITE_SERVER_URL}/debts/${groupId}`, {
                 withCredentials: true
             })
             console.log("Deudas:", response_debts.data);

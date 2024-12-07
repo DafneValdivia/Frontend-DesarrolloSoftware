@@ -6,17 +6,56 @@ import CreateGroup from './views/CreateGroup';
 import MyContacts from './views/MyContacts';
 import GroupBalance from './views/GroupBalance';
 import Profile from './views/MyProfile';
+import ProtectedRoute from './ProtectedRoute';
 
 export default function Routing() {
     return (
         <Routes>
+            {/* Rutas públicas */}
             <Route path="/" element={<App />} />
             <Route path="/groupcard" element={<TestComponents />} />
-            <Route path="/yourgroups" element={<YourGroups />} />
-            <Route path="/creategroup" element={<CreateGroup />} />
-            <Route path="/mycontacts" element={<MyContacts />} />
-            <Route path="/group/:id" element={<GroupBalance />} />
-            <Route path="/profile" element={<Profile />} />
+
+            {/* Rutas protegidas */}
+            <Route
+                path="/yourgroups"
+                element={
+                    <ProtectedRoute>
+                        <YourGroups />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/creategroup"
+                element={
+                    <ProtectedRoute>
+                        <CreateGroup />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/mycontacts"
+                element={
+                    <ProtectedRoute>
+                        <MyContacts />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/group/:id"
+                element={
+                    <ProtectedRoute>
+                        <GroupBalance />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/profile"
+                element={
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                }
+            />
         </Routes>
-    )
+    );
 }
