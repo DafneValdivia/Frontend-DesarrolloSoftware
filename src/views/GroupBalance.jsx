@@ -144,7 +144,7 @@ const GroupBalance = () => {
             </div>
             
             <div className='filters'>
-                <button className={`button_header ${option === 'deudas' ? 'activeButton' : ''}`} onClick={() => setOption('deudas')}>deudas</button>
+                <button className={`button_header ${option === 'deudas' ? 'activeButton' : ''}`} onClick={() => setOption('deudas')}>Deudas</button>
                 <button className={`button_header ${option === 'balance' ? 'activeButton' : ''}`} onClick={() => setOption('balance')}>Balance Grupal</button>
                 <button className={`button_header ${option === 'historial' ? 'activeButton' : ''}`} onClick={() => setOption('historial')}>Historial de Gastos ingresados</button>
                 <button className={`button_header ${option === 'pagos' ? 'activeButton' : ''}`} onClick={() => setOption('pagos')}>Historial de Pagos realizados</button>
