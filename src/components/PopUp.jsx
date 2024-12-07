@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
 import './PopUp.css';
 import '../App.css';
 
@@ -8,29 +7,36 @@ export default function Popup({ onClose, groupId }) {
   const [titulo, setTitulo] = useState("");
   const [amount, setAmount] = useState("");
   const [groupMembers, setGroupMembers] = useState([]);
+  const [users, setUsers] = useState([]); // Para almacenar los usuarios desde la API
   const [selectedCreditor, setSelectedCreditor] = useState("");
   const [debtDetails, setDebtDetails] = useState([]);
+  const [divideEqually, setDivideEqually] = useState(false); // Estado para dividir en partes iguales
+  const [equalSplitDetails, setEqualSplitDetails] = useState([]); // Detalles del pago dividido
 
   const serverUrl = import.meta.env.VITE_SERVER_URL;
-  const { user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
-    const fetchGroupMembers = async () => {
+    const fetchGroupData = async () => {
       try {
-        const response = await axios.get(`${serverUrl}/groups/${groupId}/members`, {
+        const groupMembersResponse = await axios.get(`${serverUrl}/groups/${groupId}/members`, {
           withCredentials: true
         });
-        setGroupMembers(response.data);
+        setGroupMembers(groupMembersResponse.data);
+
+        const usersResponse = await axios.get(`${serverUrl}/users`, {
+          withCredentials: true
+        });
+        setUsers(usersResponse.data);
       } catch (error) {
-        console.error("Error fetching group members", error);
+        console.error("Error fetching data", error);
       }
     };
 
-    fetchGroupMembers();
+    fetchGroupData();
   }, [groupId]);
 
   const handleAddDebtDetail = () => {
-    setDebtDetails([...debtDetails, { memberId: "", amount: "" }]);
+    setDebtDetails([...debtDetails, { id: "", amount: "" }]);
   };
 
   const updateDebtDetail = (index, field, value) => {
@@ -52,19 +58,15 @@ export default function Popup({ onClose, groupId }) {
     setDebtDetails(debtDetails.filter((_, index) => index !== indexToRemove));
   };
 
-  const validateDebtDetails = () => {
-    const totalDebtAmount = debtDetails.reduce(
-      (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
-      0
-    );
-    return totalDebtAmount === Number(amount.replace(/\./g, '') || 0);
-  };
-
   const handleAmountChange = (value) => {
     const intValue = value.replace(/\./g, '').replace(/[^0-9]/g, '');
     if (intValue.length > 7) return; // Límite de 7 dígitos
     const formattedValue = Number(intValue).toLocaleString("es-CL");
     setAmount(formattedValue);
+
+    if (divideEqually) {
+      handleDivideEqually(formattedValue);
+    }
   };
 
   const handleTitleChange = (value) => {
@@ -72,26 +74,116 @@ export default function Popup({ onClose, groupId }) {
     setTitulo(value);
   };
 
-  const postData = async () => {
-    if (!validateDebtDetails()) {
-      alert("La suma de las deudas debe ser igual al monto total");
+  const handleDivideEqually = (totalAmount) => {
+    const total = Number(totalAmount.replace(/\./g, ''));
+    const allMembers = groupMembers;
+    const numMembers = allMembers.length;
+
+    if (numMembers === 0) {
+      setEqualSplitDetails([]);
       return;
     }
 
+    const baseAmount = Math.floor(total / numMembers);
+    const remainder = total - baseAmount * numMembers;
+
+    const splitDetails = allMembers.map((member, index) => ({
+      id: member.user_id, // Usar `user_id` para el estándar
+      name: member.username,
+      amount: (index === 0 ? baseAmount + remainder : baseAmount).toLocaleString("es-CL")
+    }));
+
+    setEqualSplitDetails(splitDetails);
+    setDebtDetails(splitDetails.map(({ id, amount }) => ({ id, amount })));
+  };
+
+  const handleCheckboxChange = (checked) => {
+    setDivideEqually(checked);
+
+    if (checked) {
+      handleDivideEqually(amount);
+    } else {
+      setDebtDetails([]);
+      setEqualSplitDetails([]);
+    }
+  };
+
+  const validateDebtDetails = () => {
+    if (!titulo || !amount || !selectedCreditor) {
+      alert("Todos los campos son obligatorios");
+      return false;
+    }
+
+    if (divideEqually) {
+      if (equalSplitDetails.length === 0) {
+        alert("No se puede dividir en partes iguales sin miembros.");
+        return false;
+      }
+      const totalSplitAmount = equalSplitDetails.reduce(
+        (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
+        0
+      );
+      if (totalSplitAmount !== Number(amount.replace(/\./g, ''))) {
+        alert("La suma de las deudas divididas debe ser igual al monto total");
+        return false;
+      }
+      return true;
+    }
+
+    const totalDebtAmount = debtDetails.reduce(
+      (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
+      0
+    );
+    if (totalDebtAmount !== Number(amount.replace(/\./g, ''))) {
+      alert("La suma de las deudas debe ser igual al monto total");
+      return false;
+    }
+    const allMembersSelected = debtDetails.every(debt => debt.id);
+    if (!allMembersSelected) {
+      alert("Debe seleccionar un deudor para cada detalle de deuda");
+      return false;
+    }
+    return true;
+  };
+
+  const postData = async () => {
+    if (!validateDebtDetails()) return;
+
     try {
-      if (isAuthenticated) {
-        await axios.post(`${serverUrl}/transactions/create`, {
-          groupId: groupId,
-          title: titulo,
-          state: "No pagada",
-          amount: Number(amount.replace(/\./g, '')),
-          email: user.email,
-          debtsArray: debtDetails.map(debt => ({
-            id: debt.memberId,
+      const creditor = groupMembers.find(member => member.member_id === selectedCreditor);
+
+      if (!creditor) {
+        alert("Error al identificar el prestador.");
+        return;
+      }
+
+      const userEmail = users.find(user => user.id === creditor.user_id)?.mail;
+
+      if (!userEmail) {
+        alert("No se pudo encontrar el email del prestador.");
+        return;
+      }
+
+      const debtsArray = divideEqually 
+        ? equalSplitDetails.map(debt => ({
+            id: debt.id,
             amount: Number(debt.amount.replace(/\./g, ''))
           }))
-        }, { withCredentials: true });
-      }
+        : debtDetails.map(debt => ({
+            id: debt.id,
+            amount: Number(debt.amount.replace(/\./g, ''))
+          }));
+
+      await axios.post(`${serverUrl}/transactions/create`, {
+        groupId: groupId,
+        title: titulo,
+        state: "No pagada",
+        amount: Number(amount.replace(/\./g, '')),
+        email: userEmail, // Email del prestador seleccionado
+        dueDate: "2024-12-31", // Ajustar la fecha de vencimiento según sea necesario
+        debtsArray: debtsArray
+      }, { withCredentials: true });
+
       onClose();
     } catch (error) {
       console.error("Error al crear Transacciones", error);
@@ -131,58 +223,85 @@ export default function Popup({ onClose, groupId }) {
           >
             <option value="">Seleccionar...</option>
             {groupMembers.map(member => (
-              <option key={member.id} value={member.id}>
+              <option key={member.member_id} value={member.member_id}>
                 {member.username}
               </option>
             ))}
           </select>
 
-          <h3>Detalle de Deudas</h3>
-          {debtDetails.map((debt, index) => (
-            <div key={index} className="debt-detail">
-              <select 
-                value={debt.memberId}
-                onChange={(e) => updateDebtDetail(index, 'memberId', e.target.value)}
-                className="input-field"
-              >
-                <option value="">Seleccionar deudor</option>
-                {groupMembers
-                  .filter(member => 
-                    member.id !== selectedCreditor && 
-                    !debtDetails.some(d => d.memberId === member.id)
-                  )
-                  .map(member => (
-                    <option key={member.id} value={member.id}>
-                      {member.username}
-                    </option>
-                  ))
-                }
-              </select>
-              <div className="input-with-prefix">
-                <span className="prefix">$</span>
-                <input 
-                  type="text" 
-                  placeholder="Monto de deuda"
-                  value={debt.amount}
-                  onChange={(e) => updateDebtDetail(index, 'amount', e.target.value)}
-                  className="input-field"
-                />
-              </div>
-              <button 
-                onClick={() => removeDebtDetail(index)} 
-                className="remove-button"
-              >
-                Eliminar
-              </button>
-            </div>
-          ))}
+          <div className="checkbox-container">
+            <input
+              type="checkbox"
+              id="divide-equally"
+              checked={divideEqually}
+              onChange={(e) => handleCheckboxChange(e.target.checked)}
+            />
+            <label htmlFor="divide-equally">Dividir en partes iguales</label>
+          </div>
 
-          <button 
-            onClick={handleAddDebtDetail} 
-            className="add-button"
-          >
-            + Añadir Deuda
-          </button>
+          {divideEqually && (
+            <div className="equal-split-details">
+              <h3>Detalle división</h3>
+              <ul>
+                {equalSplitDetails.map(detail => (
+                  <li key={detail.id} id="equal-amounts-li">
+                    {detail.name}: ${detail.amount}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!divideEqually && (
+            <>
+              <h3>Detalle de Deudas</h3>
+              {debtDetails.map((debt, index) => (
+                <div key={index} className="debt-detail">
+                  <select 
+                    value={debt.id}
+                    onChange={(e) => updateDebtDetail(index, 'id', e.target.value)}
+                    className="input-field"
+                  >
+                    <option value="">Seleccionar deudor</option>
+                    {groupMembers
+                      .filter(member => 
+                        member.member_id !== selectedCreditor && 
+                        !debtDetails.some(d => d.id === member.user_id)
+                      )
+                      .map(member => (
+                        <option key={member.member_id} value={member.user_id}>
+                          {member.username}
+                        </option>
+                      ))
+                    }
+                  </select>
+                  <div className="input-with-prefix">
+                    <span className="prefix">$</span>
+                    <input 
+                      type="text" 
+                      placeholder="Monto de deuda"
+                      value={debt.amount}
+                      onChange={(e) => updateDebtDetail(index, 'amount', e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+                  <button 
+                    onClick={() => removeDebtDetail(index)} 
+                    className="remove-button"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              ))}
+
+              <button 
+                onClick={handleAddDebtDetail} 
+                className="add-button"
+              >
+                + Añadir Deuda
+              </button>
+            </>
+          )}
 
           <div className="popup-actions">
             <button 
