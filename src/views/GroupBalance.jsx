@@ -7,33 +7,18 @@ import Navbar from '../components/Navbar';
 import axios from "axios";
 import { useAuth0 } from '@auth0/auth0-react';
 import PropTypes from 'prop-types';
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
+import Select from "react-select";
 
 const GroupBalance = () => {
     const { id: groupId } = useParams();  // Obtiene 'id' de la URL como 'groupId'
-
-    // const balanceData = [
-    //     { deuda_id: 1, state: "Pendiente", deudor: "Pedrito", prestador: "pepito", amount: 15000 },
-    //     { deuda_id: 8, state: "Pagado", deudor: "Antonia", prestador: "Naty", amount: 15000 },
-    //     { deuda_id: 9, state: "En proceso", deudor: "Max", prestador: "Vicho", amount: 15000 },
-    //     { deuda_id: 2, state: "Pagado", deudor: "Paula", prestador: "Cata", amount: 15000 },
-    //     { deuda_id: 3, state: "En proceso", deudor: "Isa", prestador: "Nico", amount: 9900 },
-    //     { deuda_id: 4, state: "En proceso", deudor: "Pelao", prestador: "Mari", amount: 150 },
-    //     { deuda_id: 5, state: "Pendiente", deudor: "Niko", prestador: "Dafne", amount: 7000 },
-    //     { deuda_id: 6, state: "Pagado", deudor: "Fernanda", prestador: "pepito", amount: 1000 },
-    //     { deuda_id: 7, state: "Pendiente", deudor: "Valentina", prestador: "Lucas", amount: 15000 },
-    // ] // DEUDAS del grupo
-
-    // const transactions = [
-    //     {id: 1, title: "Castaño", creditorName: "Pedrito", amount: 15000},
-    //     {id: 2, title: "Hamburguesa", creditorName: "Cata", amount: 6000},
-    //     {id: 3, title: "Bencina", creditorName: "Mari", amount: 50000},
-    //     {id: 4, title: "Estadía", creditorName: "Pedrito", amount: 150000},
-    //     {id: 5, title: "Bencina", creditorName: "Paula", amount: 5000},
-    // ] // TRANSACTIONS del grupo
+    const location = useLocation();
+    const groupName = location.state?.groupName || "Nombre desconocido";
 
     const [transactions, setTransactions] = useState([]);
+    const [deudas, setDeudas] = useState([]);
     const [balanceData, setBalanceData] = useState([]);
+    const [membersData, setMembersData] = useState([]);
     const { user, isAuthenticated } = useAuth0();
 
     const fetchData = async () => {
@@ -41,15 +26,47 @@ const GroupBalance = () => {
             const response = await axios.get(`http://localhost:3000/transactions/group/${groupId}`, {
                 withCredentials: true
             }) // Ruta del back para obtener deudas segun el id del grupo
+            console.log("Transacciones:", response.data);
             setTransactions(response.data);
 
             const response_debts = await axios.get(`http://localhost:3000/debts/${groupId}`, {
                 withCredentials: true
             })
-            console.log("ALOOO:", response_debts.data);
-            setBalanceData(response_debts.data);
+            console.log("Deudas:", response_debts.data);
+            setDeudas(response_debts.data);
+
+            const response_balance = await axios.get(`http://localhost:3000/balance/${groupId}`, {
+                withCredentials: true
+            })
+            console.log("Balance:", response_balance.data);
+            setBalanceData(response_balance.data);
+
+            const response_members = await axios.get(`http://localhost:3000/groups/${groupId}/members`, {
+                withCredentials: true
+            })
+            console.log("Miembros:", response_members.data);
+
+            const response_users = await axios.get(`http://localhost:3000/users`, {
+                withCredentials: true
+            })
+            console.log("Users:", response_users.data);
+
+            // Asocia información de usuarios con los miembros
+            const enrichedMembers = response_members.data.map((member) => {
+                const user = response_users.data.find((u) => u.id === member.user_id);
+                return {
+                    ...member,
+                    username: user?.username || "Desconocido",
+                    mail: user?.mail || "Sin correo",
+                    phone: user?.phone || "Sin número de teléfono",
+                };
+            });
+
+            setMembersData(enrichedMembers);
+        console.log(membersData)
+
         } catch (error) {
-            console.error("Error al obtener Transacciones", error);
+            console.error("Error al obtener datos", error);
         }
     };
 
@@ -59,12 +76,14 @@ const GroupBalance = () => {
 
     const getStateClass = (state) => {
         switch (state) {
-            case "Pendiente":
+            case "No pagada":
                 return "estado-pendiente";
-            case "Pagado":
+            case "Pagada":
                 return "estado-pagado";
-            case "En proceso":
+            case "Por confirmar":
                 return "estado-en-proceso";
+            case "Cancelada":
+                return "estado-cancelada";
             default:
                 return "";
         }
@@ -72,20 +91,13 @@ const GroupBalance = () => {
     const [searchDeudor, setSearchDeudor] = useState(""); // Estado para buscar deudor
     const [searchPrestador, setSearchPrestador] = useState(""); // Estado para buscar prestador
     const [filter, setFilter] = useState("todos");
-    const filteredBalances = balanceData.filter((deuda) => {
+    const filteredBalances = deudas.filter((deuda) => {
         const matchesFilter = filter === "todos" || deuda.state === filter;
-        const matchesDeudor = searchDeudor === "" || deuda.debtor_name.username.toString().includes(searchDeudor);
-        const matchesPrestador = searchPrestador === "" || deuda.creditor_name.username.toLowerCase().includes(searchPrestador.toLowerCase());
-        return matchesFilter && matchesDeudor && matchesPrestador;
-    });
-    const filteredTransactions = balanceData.filter((deuda) => {
-        const matchesFilter = filter === "todos" || deuda.state === filter;
-        const matchesDeudor = searchDeudor === "" || deuda.debtor_name.username.toString().includes(searchDeudor);
+        const matchesDeudor = searchDeudor === "" || deuda.debtor_name.username.toString().toLowerCase().includes(searchDeudor.toLowerCase());
         const matchesPrestador = searchPrestador === "" || deuda.creditor_name.username.toLowerCase().includes(searchPrestador.toLowerCase());
         return matchesFilter && matchesDeudor && matchesPrestador;
     });
     const sortedBalances = [...filteredBalances].sort((a, b) => a.deuda_id - b.deuda_id);
-    const sortedTransactions = [...filteredTransactions].sort((a, b) => a.deuda_id - b.deuda_id);
 
     const [popUp, setPopUp] = useState(null);
     const [option, setOption] = useState("balance");
@@ -95,12 +107,35 @@ const GroupBalance = () => {
         fetchData();  // Recarga los datos
     };
 
+    const handleStateChange = async (debt, newState) => {
+        try {
+            await axios.put(`http://localhost:3000/debts/${debt.debt_id}`, {
+                state: newState,
+            }, {
+                withCredentials: true
+            });
+            console.log("enviado");
+            fetchData(); // Recarga los datos después de actualizar
+        } catch (error) {
+            console.error("Error al actualizar el estado:", error);
+        }
+    };
+    
+
     return (
         <div>
             <Navbar />
+            <div >
+               <h1 className="title_group">{groupName}</h1> 
+            </div>
+            
             <div className='filters'>
-                <button className={`button ${option === 'balance' ? 'activeButton' : ''}`} onClick={() => setOption('balance')}>Balance Grupal</button>
-                <button className={`button ${option === 'historial' ? 'activeButton' : ''}`} onClick={() => setOption('historial')}>Historial de Transacciones</button>
+                <button className={`button_header ${option === 'deudas' ? 'activeButton' : ''}`} onClick={() => setOption('deudas')}>deudas</button>
+                <button className={`button_header ${option === 'balance' ? 'activeButton' : ''}`} onClick={() => setOption('balance')}>Balance Grupal</button>
+                <button className={`button_header ${option === 'historial' ? 'activeButton' : ''}`} onClick={() => setOption('historial')}>Historial de Gastos ingresados</button>
+                <button className={`button_header ${option === 'pagos' ? 'activeButton' : ''}`} onClick={() => setOption('pagos')}>Historial de Pagos realizados</button>
+                <button className={`button_header ${option === 'detalles' ? 'activeButton' : ''}`} onClick={() => setOption('detalles')}>Detalles del Grupo</button>
+            
             </div>
 
             {option === "historial" && (
@@ -124,12 +159,12 @@ const GroupBalance = () => {
                 </div>
             )}
 
-            {option === "balance" && (
+            {option === "deudas" && (
                 <div>
                     <div className="filters">
                         {/* Filtrar por estado */}
 
-                        {/* <div className="filter">
+                        <div className="filter">
                             <label className='label_filter'>Filtrar por estado:</label>
                             <select
                                 id="filter"
@@ -137,16 +172,17 @@ const GroupBalance = () => {
                                 onChange={(e) => setFilter(e.target.value)} // Actualizar el filtro al cambiar
                             >
                                 <option value="todos">Todos</option>
-                                <option value="Pendiente">Pendientes</option>
-                                <option value="Pagado">Pagados</option>
-                                <option value="En proceso">En proceso</option>
+                                <option value="Pagada">Pagada</option>
+                                <option value="Por confirmar">Por confirmar</option>
+                                <option value="No pagada">No pagada</option>
+                                <option value="Cancelada">Cancelada</option>
                             </select>
-                        </div> */}
+                        </div>
 
 
                         {/* Buscar Deudor */}
 
-                        {/* <div className="filter">
+                        <div className="filter">
                             <label className='label_filter'>Buscar Deudor:</label>
                             <input
                                 type="text"
@@ -154,12 +190,12 @@ const GroupBalance = () => {
                                 value={searchDeudor}
                                 onChange={(e) => setSearchDeudor(e.target.value)}
                             />
-                        </div> */}
+                        </div>
 
 
                         {/* Buscar Prestador */}
 
-                        {/* <div className="filter">
+                        <div className="filter">
                             <label className="label_filter">Buscar Prestador:</label>
                             <input
                                 type="text"
@@ -167,7 +203,7 @@ const GroupBalance = () => {
                                 value={searchPrestador}
                                 onChange={(e) => setSearchPrestador(e.target.value)}
                             />
-                        </div> */}
+                        </div>
 
                     </div>
 
@@ -183,7 +219,37 @@ const GroupBalance = () => {
                         <tbody>
                             {sortedBalances.map((deuda) => (
                                 <tr key={deuda.id}>
-                                    <td className={getStateClass(deuda.state)}>{deuda.state}</td>
+                                    <td className={getStateClass(deuda.state)}>
+                                        {deuda.debtor_name?.mail === user?.email || deuda.creditor_name?.mail === user?.email ? (
+                                        <select className="dropdown_state"
+                                            value={deuda.id}
+                                            onChange={(e) => handleStateChange(deuda, e.target.value)}
+                                            disabled={
+                                                (user?.email === deuda.debtor_name?.mail && deuda.state !== "No pagada") ||
+                                                (user?.email === deuda.creditor_name?.mail && !["No pagada", "Por confirmar"].includes(deuda.state))
+                                            }
+                                        >
+                                            {user?.email === deuda.debtor_name?.mail && (
+                                                <>
+                                                    <option value={deuda.state}>{deuda.state}</option>
+                                                    <option value="No pagada">No pagada</option>
+                                                    <option value="Por confirmar">Por confirmar</option>
+                                                </>
+                                            )}
+                                            {user?.email === deuda.creditor_name?.mail && (
+                                                <>
+                                                    <option value={deuda.state}>{deuda.state}</option>
+                                                    <option value="No pagada">No pagada</option>
+                                                    <option value="Por confirmar">Por confirmar</option>
+                                                    <option value="Pagada">Pagada</option>
+                                                    <option value="Cancelada">Cancelada</option>
+                                                </>
+                                            )}
+                                        </select>
+                                    ) : (
+                                        <span>{deuda.state}</span>
+                                    )}
+                                    </td>
                                     <td>{deuda.debtor_name?.username || "Desconocido"}</td>  {/* Asegúrate de que deudor_name existe */}
                                     <td>{deuda.creditor_name?.username || "Desconocido"}</td>  {/* Asegúrate de que creditor_name existe */}
                                     <td>{deuda.amount}</td>
@@ -196,6 +262,153 @@ const GroupBalance = () => {
                         altText="Agregar deuda" // Texto alternativo
                     />
                 </div>)}
+
+
+            {option === "balance" && (
+            <div>
+                {/* <div className="filters">
+                    <div className="filter">
+                        <label className='label_filter'>Filtrar por estado:</label>
+                        <select
+                            id="filter"
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value)} // Actualizar el filtro al cambiar
+                        >
+                            <option value="todos">Todos</option>
+                            <option value="Pagada">Pagada</option>
+                            <option value="Por confirmar">Por confirmar</option>
+                            <option value="No pagada">No pagada</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                    </div>
+
+
+                        <div className="filter">
+                            <label className='label_filter'>Buscar Deudor:</label>
+                            <input
+                                type="text"
+                                placeholder="Ej. 1"
+                                value={searchDeudor}
+                                onChange={(e) => setSearchDeudor(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="filter">
+                            <label className="label_filter">Buscar Prestador:</label>
+                            <input
+                                type="text"
+                                placeholder="Ej. Persona A"
+                                value={searchPrestador}
+                                onChange={(e) => setSearchPrestador(e.target.value)}
+                            />
+                        </div>
+
+                    </div> */}
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Estado</th>
+                                <th>Deudor</th>
+                                <th>Monto</th>
+                                <th>Prestador</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {balanceData.map((deuda) => (
+                                <tr key={deuda.id}>
+                                    <td className={getStateClass(deuda.state)}>
+                                        {deuda.debtor_name?.mail === user?.email || deuda.creditor_name?.mail === user?.email ? (
+                                        <select className="dropdown_state"
+                                            value={deuda.id}
+                                            onChange={(e) => handleStateChange(deuda, e.target.value)}
+                                            disabled={
+                                                (user?.email === deuda.debtor_name?.mail && deuda.state !== "No pagada") ||
+                                                (user?.email === deuda.creditor_name?.mail && !["No pagada", "Por confirmar"].includes(deuda.state))
+                                            }
+                                        >
+                                            {user?.email === deuda.debtor_name?.mail && (
+                                                <>
+                                                    <option value={deuda.state}>{deuda.state}</option>
+                                                    <option value="No pagada">No pagada</option>
+                                                    <option value="Por confirmar">Por confirmar</option>
+                                                </>
+                                            )}
+                                            {user?.email === deuda.creditor_name?.mail && (
+                                                <>
+                                                    <option value={deuda.state}>{deuda.state}</option>
+                                                    <option value="No pagada">No pagada</option>
+                                                    <option value="Por confirmar">Por confirmar</option>
+                                                    <option value="Pagada">Pagada</option>
+                                                    <option value="Cancelada">Cancelada</option>
+                                                </>
+                                            )}
+                                        </select>
+                                    ) : (
+                                        <span>{deuda.state}</span>
+                                    )}
+                                    </td>
+                                    <td>{deuda.fromName || "Desconocido"}</td>  {/* Asegúrate de que deudor_name existe */}
+                                    <td>{deuda.amount}</td>
+                                    <td>{deuda.toName || "Desconocido"}</td>  {/* Asegúrate de que creditor_name existe */}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {/* <RoundButton
+                        onClick={(e) => setPopUp("on")}
+                        altText="Agregar deuda" // Texto alternativo
+                    /> */}
+                </div>)}
+
+            {option === "pagos" && (
+                <div> 
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre de usuario</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {membersData.map((member) => (
+                                <tr key={member.id}>
+                                    <td>{member.username}</td>
+                                    <td>{member.mail}</td>
+                                    <td>{member.phone}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+            
+            {option === "detalles" && (
+                <div> 
+                    <div className="left_side">
+                        <h2>Miembros del Grupo</h2>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre de usuario</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {membersData.map((member) => (
+                                <tr key={member.id}>
+                                    <td>{member.username}</td>
+                                    <td>{member.mail}</td>
+                                    <td>{member.phone}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
             {popUp && <Popup groupId={groupId} onClose={handlePopUpClose} />}
 
