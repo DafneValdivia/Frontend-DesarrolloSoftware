@@ -19,6 +19,7 @@ const GroupBalance = () => {
     const [deudas, setDeudas] = useState([]);
     const [balanceData, setBalanceData] = useState([]);
     const [membersData, setMembersData] = useState([]);
+    const [paymentsData, setPaymentsData] = useState([]);
     const { user, isAuthenticated } = useAuth0();
 
     const fetchData = async () => {
@@ -40,6 +41,12 @@ const GroupBalance = () => {
             })
             console.log("Balance:", response_balance.data);
             setBalanceData(response_balance.data);
+
+            const response_payments = await axios.get(`${import.meta.env.VITE_SERVER_URL}/payments/${groupId}`, {
+                withCredentials: true
+            })
+            console.log("Pagos:", response_payments.data);
+            setPaymentsData(response_payments.data);
 
             const response_members = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/members`, {
                 withCredentials: true
@@ -138,7 +145,7 @@ const GroupBalance = () => {
             </div>
             
             <div className='filters'>
-                <button className={`button_header ${option === 'deudas' ? 'activeButton' : ''}`} onClick={() => setOption('deudas')}>deudas</button>
+                {/* <button className={`button_header ${option === 'deudas' ? 'activeButton' : ''}`} onClick={() => setOption('deudas')}>deudas</button> */}
                 <button className={`button_header ${option === 'balance' ? 'activeButton' : ''}`} onClick={() => setOption('balance')}>Balance Grupal</button>
                 <button className={`button_header ${option === 'historial' ? 'activeButton' : ''}`} onClick={() => setOption('historial')}>Historial de Gastos ingresados</button>
                 <button className={`button_header ${option === 'pagos' ? 'activeButton' : ''}`} onClick={() => setOption('pagos')}>Historial de Pagos realizados</button>
@@ -167,7 +174,7 @@ const GroupBalance = () => {
                 </div>
             )}
 
-            {option === "deudas" && (
+            {/* {option === "deudas" && (
                 <div>
 
                     <table>
@@ -213,15 +220,15 @@ const GroupBalance = () => {
                                         <span>{deuda.state}</span>
                                     )}
                                     </td>
-                                    <td>{deuda.debtor_name?.username || "Desconocido"}</td>  {/* Asegúrate de que deudor_name existe */}
-                                    <td>{deuda.creditor_name?.username || "Desconocido"}</td>  {/* Asegúrate de que creditor_name existe */}
+                                    <td>{deuda.debtor_name?.username || "Desconocido"}</td> 
+                                    <td>{deuda.creditor_name?.username || "Desconocido"}</td>  
                                     <td>{deuda.amount}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                     
-                </div>)}
+                </div>)} */}
 
 
             {option === "balance" && (
