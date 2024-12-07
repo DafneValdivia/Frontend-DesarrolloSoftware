@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './PopUp.css';
 import '../App.css'
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react"; // Si estás usando Auth0
+import { PopupCancelledError, useAuth0 } from "@auth0/auth0-react"; // Si estás usando Auth0
 
 export default function Popup({ groupId, onClose }) {
   const [titulo, setTitulo] = useState("");
@@ -50,7 +50,12 @@ export default function Popup({ groupId, onClose }) {
   const postData = async () => {
     try {
       if (isAuthenticated) {
-        await axios.post(`${serverUrl}/transactions/create`,
+      console.log(groupId);
+      console.log(titulo);
+      console.log(amount);
+      console.log(user);
+
+        await axios.post(`${import.meta.env.VITE_SERVER_URL}/transactions/create`,
           {
             "groupId": groupId,
             "title": titulo,
