@@ -35,18 +35,18 @@ const GroupBalance = () => {
             console.log("Deudas:", response_debts.data);
             setDeudas(response_debts.data);
 
-            const response_balance = await axios.get(`http://localhost:3000/balance/${groupId}`, {
+            const response_balance = await axios.get(`${import.meta.env.VITE_SERVER_URL}/balance/${groupId}`, {
                 withCredentials: true
             })
             console.log("Balance:", response_balance.data);
             setBalanceData(response_balance.data);
 
-            const response_members = await axios.get(`http://localhost:3000/groups/${groupId}/members`, {
+            const response_members = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/members`, {
                 withCredentials: true
             })
             console.log("Miembros:", response_members.data);
 
-            const response_users = await axios.get(`http://localhost:3000/users`, {
+            const response_users = await axios.get(`${import.meta.env.VITE_SERVER_URL}/users`, {
                 withCredentials: true
             })
             console.log("Users:", response_users.data);
@@ -109,7 +109,7 @@ const GroupBalance = () => {
 
     const handleStateChange = async (debt, newState) => {
         try {
-            await axios.put(`http://localhost:3000/debts/${debt.debt_id}`, {
+            await axios.put(`${import.meta.env.VITE_SERVER_URL}/debts/${debt.debt_id}`, {
                 state: newState,
             }, {
                 withCredentials: true

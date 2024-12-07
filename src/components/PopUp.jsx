@@ -16,11 +16,11 @@ export default function Popup({ groupId, onClose }) {
 
   // const fetchData = async () => {
   //     try {
-  //       const response_members = await axios.get(`http://localhost:3000/groups/${groupId}/members`, {
+  //       const response_members = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/members`, {
   //               withCredentials: true
   //           })
   //           //console.log("Miembros:", response_members.data);
-  //           const response_users = await axios.get(`http://localhost:3000/users`, {
+  //           const response_users = await axios.get(`${import.meta.env.VITE_SERVER_URL}/users`, {
   //               withCredentials: true
   //           })
   //           //console.log("Users:", response_users.data);
