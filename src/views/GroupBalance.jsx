@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import { useParams, useLocation } from "react-router-dom";
 import InviteMemberPopUp from "../components/InviteMemberPopUp";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
 
 const GroupBalance = () => {
     const { id: groupId } = useParams();  // Obtiene 'id' de la URL como 'groupId'
@@ -158,6 +159,11 @@ const GroupBalance = () => {
     const [userContacts, setUserContacts] = useState([]); // Lista de contactos del usuario
     const [invitedUserMail, setInvitedUserMail] = useState(""); // Correo del usuario a invitar
     const [searchTerm, setSearchTerm] = useState(""); // Texto para filtrar contactos
+    const [successMessage, setSuccessMessage] = useState("");
+    const [feedbackMessage, setFeedbackMessage] = useState(null);
+    const [isError, setIsError] = useState(false); // Estado para distinguir entre éxito o error
+    const navigate = useNavigate();
+
 
 
     // Función para abrir el popup y cargar contactos del usuario
@@ -193,20 +199,94 @@ const GroupBalance = () => {
                 {
                     invitedUserMail,
                     groupId,
-                }, {
+                },
+                {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                        Authorization: `Bearer ${token}`,
                     }
                 }
             );
             console.log("Invitación enviada correctamente");
-            closeAddMemberPopup(); // Cierra el popup
+    
+            setSuccessMessage(`Invitación enviada a ${invitedUserMail}`);
+    
+            closeAddMemberPopup();
+    
+            setTimeout(() => setSuccessMessage(""), 5000);
         } catch (error) {
             console.error("Error al enviar la invitación:", error);
         }
     };
+    
+    const handleDeleteMember = async (memberMail) => {
+        if (!window.confirm("¿Estás seguro de que quieres eliminar este miembro?")) return;
+    
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.delete(
+                `${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/member/${memberMail}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log("Miembro eliminado correctamente");
+    
+            // Establece el mensaje de éxito
+            setFeedbackMessage(`El miembro con correo ${memberMail} fue eliminado exitosamente.`);
+            setIsError(false); // No es un error
+            fetchData(); // Actualiza la lista de miembros
+    
+            // Limpia el mensaje después de 5 segundos
+            setTimeout(() => setFeedbackMessage(null), 5000);
+        } catch (error) {
+            console.error("Error al eliminar miembro:", error);
+    
+            // Establece el mensaje de error
+            setFeedbackMessage(`Hubo un problema al eliminar el miembro con correo ${memberMail}.`);
+            setIsError(true); // Es un error
+    
+            // Limpia el mensaje después de 5 segundos
+            setTimeout(() => setFeedbackMessage(null), 5000);
+        }
+    };
 
-
+    const handleLeaveGroup = async () => {
+        if (!window.confirm("¿Estás seguro de que quieres salir del grupo?")) return;
+    
+        try {
+            const token = await getAccessTokenSilently();
+            await axios.delete(
+                `${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/member/${user.email}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log("Has salido del grupo correctamente");
+    
+            // Muestra un mensaje de éxito
+            setFeedbackMessage("Has salido del grupo correctamente.");
+            setIsError(false); // No es un error
+    
+            // Redirige después de un corto tiempo
+            setTimeout(() => {
+                navigate('/yourgroups');
+            }, 2000);
+        } catch (error) {
+            console.error("Error al salir del grupo:", error);
+    
+            // Muestra un mensaje de error
+            setFeedbackMessage("Ocurrió un problema al intentar salir del grupo.");
+            setIsError(true); // Es un error
+    
+            // Limpia el mensaje después de 5 segundos
+            setTimeout(() => setFeedbackMessage(null), 5000);
+        }
+    };
+    
     
 
     return (
@@ -434,6 +514,7 @@ const GroupBalance = () => {
                                 <th>Nombre de usuario</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
+                                <th>Editar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -442,12 +523,49 @@ const GroupBalance = () => {
                                     <td>{member.username}</td>
                                     <td>{member.mail}</td>
                                     <td>{member.phone}</td>
+                                    <td>
+                                        {member.mail === user.email ? (
+                                            <button
+                                                className="leave-button"
+                                                onClick={() => handleLeaveGroup()}
+                                            >
+                                                Salirme
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="delete-button"
+                                                onClick={() => handleDeleteMember(member.mail)}
+                                            >
+                                                Eliminar
+                                            </button>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                     <div className="add-member-button-container">
-                        <button id="btn-add-member" onClick={openAddMemberPopup}>Añadir miembro</button>
+                        <button
+                            id="btn-add-member"
+                            onClick={openAddMemberPopup}
+                            disabled={membersData.length >= 10}
+                            title={membersData.length >= 10 ? "No puedes añadir más de 10 miembros" : ""}
+                        >
+                            Añadir miembro
+                        </button>
+                        {membersData.length >= 10 && (
+                            <p className="error-message">No puedes añadir más de 10 miembros al grupo.</p>
+                        )}
+                        {successMessage && (
+                            <div className="success-message">
+                                {successMessage}
+                            </div>
+                        )}
+                        {feedbackMessage && (
+                            <div className={`feedback-message ${isError ? "error" : "success"}`}>
+                                {feedbackMessage}
+                            </div>
+                        )}
                     </div>
                     {showAddMemberPopup && (
                         <InviteMemberPopUp
