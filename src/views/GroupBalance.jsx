@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import '../App.css';
 import './GroupBalance.css'
 import RoundButton from "../components/RoundButton";
@@ -10,9 +10,8 @@ import PropTypes from 'prop-types';
 import { useParams, useLocation } from "react-router-dom";
 import PopupPagos from "../components/PopUpPagos";
 import InviteMemberPopUp from "../components/InviteMemberPopUp";
-import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import DebtGraph from "../components/graph";
+// import DebtGraph from "../components/graph";
 
 const GroupBalance = () => {
     const { id: groupId } = useParams();  // Obtiene 'id' de la URL como 'groupId'
@@ -20,7 +19,7 @@ const GroupBalance = () => {
     const groupName = location.state?.groupName || "Nombre desconocido";
 
     const [transactions, setTransactions] = useState([]);
-    const [deudas, setDeudas] = useState([]);
+    //const [deudas, setDeudas] = useState([]);
     const [balanceData, setBalanceData] = useState([]);
     const [membersData, setMembersData] = useState([]);
     const [paymentsData, setPaymentsData] = useState([]);
@@ -37,13 +36,13 @@ const GroupBalance = () => {
             console.log("Transacciones:", response.data);
             setTransactions(response.data);
 
-            const response_debts = await axios.get(`${import.meta.env.VITE_SERVER_URL}/debts/${groupId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
-                }
-            })
-            console.log("Deudas:", response_debts.data);
-            setDeudas(response_debts.data);
+            // const response_debts = await axios.get(`${import.meta.env.VITE_SERVER_URL}/debts/${groupId}`, {
+            //     headers: {
+            //         Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+            //     }
+            // })
+            // console.log("Deudas:", response_debts.data);
+            // setDeudas(response_debts.data);
 
             const response_balance = await axios.get(`${import.meta.env.VITE_SERVER_URL}/balance/${groupId}`, {
                 headers: {
@@ -98,23 +97,23 @@ const GroupBalance = () => {
         fetchData();
     }, [isAuthenticated, user, groupId]);
 
-    const getStateClass = (state) => {
-        switch (state) {
-            case "No pagada":
-                return "estado-pendiente";
-            case "Pagada":
-                return "estado-pagado";
-            case "Por confirmar":
-                return "estado-en-proceso";
-            case "Cancelada":
-                return "estado-cancelada";
-            default:
-                return "";
-        }
-    };
+    // const getStateClass = (state) => {
+    //     switch (state) {
+    //         case "No pagada":
+    //             return "estado-pendiente";
+    //         case "Pagada":
+    //             return "estado-pagado";
+    //         case "Por confirmar":
+    //             return "estado-en-proceso";
+    //         case "Cancelada":
+    //             return "estado-cancelada";
+    //         default:
+    //             return "";
+    //     }
+    // };
     const [searchDeudor, setSearchDeudor] = useState(""); // Estado para buscar deudor
     const [searchPrestador, setSearchPrestador] = useState(""); // Estado para buscar prestador
-    const [filter, setFilter] = useState("todos");
+    //const [filter, setFilter] = useState("todos");
     // const filteredBalances = deudas.filter((deuda) => {
     //     const matchesFilter = filter === "todos" || deuda.state === filter;
     //     const matchesDeudor = searchDeudor === "" || deuda.debtor_name.username.toString().toLowerCase().includes(searchDeudor.toLowerCase());
@@ -145,22 +144,22 @@ const GroupBalance = () => {
         fetchData();  // Recarga los datos
     };
 
-    const handleStateChange = async (debt, newState) => {
-        try {
-            const token = await getAccessTokenSilently();
-            await axios.put(`${import.meta.env.VITE_SERVER_URL}/debts/${debt.debt_id}`, {
-                state: newState,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
-                }
-            });
-            console.log("enviado");
-            fetchData(); // Recarga los datos después de actualizar
-        } catch (error) {
-            console.error("Error al actualizar el estado:", error);
-        }
-    };
+    // const handleStateChange = async (debt, newState) => {
+    //     try {
+    //         const token = await getAccessTokenSilently();
+    //         await axios.put(`${import.meta.env.VITE_SERVER_URL}/debts/${debt.debt_id}`, {
+    //             state: newState,
+    //         }, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+    //             }
+    //         });
+    //         console.log("enviado");
+    //         fetchData(); // Recarga los datos después de actualizar
+    //     } catch (error) {
+    //         console.error("Error al actualizar el estado:", error);
+    //     }
+    // };
 
     // Lógica add member
     const [showAddMemberPopup, setShowAddMemberPopup] = useState(false); // Controla la visibilidad del popup
@@ -430,7 +429,7 @@ const GroupBalance = () => {
                         </tbody>
                     </table>
                     <RoundButton
-                        onClick={(e) => setPopUp("on")}
+                        onClick={setPopUp("on")}
                         altText="Agregar deuda" // Texto alternativo
                     />
                     {/* <div>
@@ -468,7 +467,7 @@ const GroupBalance = () => {
                         </tbody>
                     </table>
                     <RoundButton
-                        onClick={(e) => setPopUpPagos("on")}
+                        onClick={setPopUpPagos("on")}
                         altText="Agregar pago" // Texto alternativo
                     />
                 </div>

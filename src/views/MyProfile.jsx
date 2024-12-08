@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ProfileInfo from '../components/ProfileInfo';
 import InvitationField from '../components/InvitationField';
 import './MyProfile.css';
