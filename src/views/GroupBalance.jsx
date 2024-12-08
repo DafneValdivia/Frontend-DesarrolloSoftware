@@ -12,6 +12,7 @@ import PopupPagos from "../components/PopUpPagos";
 import InviteMemberPopUp from "../components/InviteMemberPopUp";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
+import DebtGraph from "../components/graph";
 
 const GroupBalance = () => {
     const { id: groupId } = useParams();  // Obtiene 'id' de la URL como 'groupId'
@@ -432,6 +433,10 @@ const GroupBalance = () => {
                         onClick={(e) => setPopUp("on")}
                         altText="Agregar deuda" // Texto alternativo
                     />
+                    {/* <div>
+                       <DebtGraph /> 
+                    </div> */}
+                    
                 </div>)}
 
             {option === "pagos" && (
