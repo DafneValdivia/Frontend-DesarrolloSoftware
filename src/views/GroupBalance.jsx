@@ -8,6 +8,7 @@ import axios from "axios";
 import { useAuth0 } from '@auth0/auth0-react';
 import PropTypes from 'prop-types';
 import { useParams, useLocation } from "react-router-dom";
+import PopupPagos from "../components/PopUpPagos";
 import Select from "react-select";
 
 const GroupBalance = () => {
@@ -126,10 +127,16 @@ const GroupBalance = () => {
     const sortedBalances = [...filteredBalances].sort((a, b) => a.deuda_id - b.deuda_id);
 
     const [popUp, setPopUp] = useState(null);
+    const [popUpPagos, setPopUpPagos] = useState(null);
     const [option, setOption] = useState("balance");
 
     const handlePopUpClose = () => {
         setPopUp(null);  // Cierra el popup
+        fetchData();  // Recarga los datos
+    };
+
+    const handlePopUpPagosClose = () => {
+        setPopUpPagos(null);  // Cierra el popup
         fetchData();  // Recarga los datos
     };
 
@@ -187,62 +194,6 @@ const GroupBalance = () => {
                     </table>
                 </div>
             )}
-
-            {/* {option === "deudas" && (
-                <div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Estado</th>
-                                <th>Deudor</th>
-                                <th>Prestador</th>
-                                <th>Monto</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {deudas.map((deuda) => (
-                                <tr key={deuda.id}>
-                                    <td className={getStateClass(deuda.state)}>
-                                        {deuda.debtor_name?.mail === user?.email || deuda.creditor_name?.mail === user?.email ? (
-                                        <select className="dropdown_state"
-                                            value={deuda.id}
-                                            onChange={(e) => handleStateChange(deuda, e.target.value)}
-                                            disabled={
-                                                (user?.email === deuda.debtor_name?.mail && deuda.state !== "No pagada") ||
-                                                (user?.email === deuda.creditor_name?.mail && !["No pagada", "Por confirmar"].includes(deuda.state))
-                                            }
-                                        >
-                                            {user?.email === deuda.debtor_name?.mail && (
-                                                <>
-                                                    <option value={deuda.state}>{deuda.state}</option>
-                                                    <option value="No pagada">No pagada</option>
-                                                    <option value="Por confirmar">Por confirmar</option>
-                                                </>
-                                            )}
-                                            {user?.email === deuda.creditor_name?.mail && (
-                                                <>
-                                                    <option value={deuda.state}>{deuda.state}</option>
-                                                    <option value="No pagada">No pagada</option>
-                                                    <option value="Por confirmar">Por confirmar</option>
-                                                    <option value="Pagada">Pagada</option>
-                                                    <option value="Cancelada">Cancelada</option>
-                                                </>
-                                            )}
-                                        </select>
-                                    ) : (
-                                        <span>{deuda.state}</span>
-                                    )}
-                                    </td>
-                                    <td>{deuda.debtor_name?.username || "Desconocido"}</td> 
-                                    <td>{deuda.creditor_name?.username || "Desconocido"}</td>  
-                                    <td>{deuda.amount}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    
-                </div>)} */}
 
 
             {option === "balance" && (
@@ -362,6 +313,10 @@ const GroupBalance = () => {
                             ))}
                         </tbody>
                     </table>
+                    <RoundButton
+                        onClick={(e) => setPopUpPagos("on")}
+                        altText="Agregar pago" // Texto alternativo
+                    />
                 </div>
             )}
             
@@ -392,6 +347,7 @@ const GroupBalance = () => {
             )}
 
             {popUp && <Popup groupId={groupId} onClose={handlePopUpClose} />}
+            {popUpPagos && <PopupPagos groupId={groupId} onClose={handlePopUpPagosClose} />}
 
         </div>)
 }

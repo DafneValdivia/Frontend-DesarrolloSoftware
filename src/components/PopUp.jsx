@@ -276,8 +276,8 @@ export default function Popup({ onClose, groupId }) {
                     value={debt.id}
                     onChange={(e) => updateDebtDetail(index, 'id', e.target.value)}
                     className="input-field"
+                    placeholder="Seleccionar deudor"
                   >
-                    <option value="">Seleccionar deudor</option>
                     {groupMembers
                       .filter(member => 
                         member.member_id !== selectedCreditor && 
