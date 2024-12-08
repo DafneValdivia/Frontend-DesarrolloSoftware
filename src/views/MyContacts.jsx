@@ -1,96 +1,38 @@
-// import React from "react";
-// import Navbar from "../components/Navbar";
-// import AddContactForm from '../components/AddContactForm';
-// import ContactField from "../components/ContactField";
-// import "./MyContacts.css";
-// // Sin conexión
-// const contactosExistentes = [
-//     { username: "dafne", email: "dafne@example.com" },
-//     { username: "mari", email: "mari@example.com" },
-//     { username: "cata", email: "cata@example.com" },
-//     { username: "alonso", email: "alonso@example.com" },
-//     { username: "stefano", email: "stefano@example.com" },
-//     { username: "cristobal", email: "cristobal@example.com" }
-// ];
-
-// const misContactos = [
-//     { username: "juan", email: "juan@example.com" },
-//     { username: "maria", email: "maria@example.com" },
-//     { username: "carlos", email: "carlos@example.com" },
-//     { username: "pepito", email: "pepito@example.com" },
-//     { username: "ines", email: "ines@example.com" },
-//     { username: "pablo", email: "pablo@example.com" },
-//     { username: "antonia", email: "antonia@example.com" }
-// ];
-
-
-// export default function MyContacts() {
-//     // pedir los contactos existentes al back
-
-//     const handleAddContact = (groupData) => {
-//         console.log("Grupo creado:", groupData);
-
-//         // Aquí puedes manejar la lógica de envío al backend o actualización del estado global
-
-
-//     };
-
-//     const handleContactoClicked = (contactoClicked) => {
-//         console.log("Contacto Clickeado:", contactoClicked )
-//         // ver si hacer algo con ese contacto o no
-//     };
-
-//     return (
-//         <div>
-//             <Navbar />
-//             <div className="contacts-page-container">
-//                 <AddContactForm contactos={contactosExistentes} onGroupCreate={handleAddContact} />
-//                 <ContactField contactos={misContactos} onContactoClicked={handleContactoClicked} />
-//             </div>
-//         </div>
-//     );
-
-// }
-
-// Con conexion 
-
 import React from "react";
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import Navbar from "../components/Navbar";
 import AddContactForm from '../components/AddContactForm';
 import ContactField from "../components/ContactField";
-import { useAuth0 } from "@auth0/auth0-react"; // Si estás usando Auth0
+import { useAuth0 } from "@auth0/auth0-react";
 import "./MyContacts.css";
 
 export default function MyContacts() {
-    const { user, isAuthenticated } = useAuth0(); // Obtener el user_id del usuario autenticado
+    const { user, isAuthenticated } = useAuth0();
     const [contactosExistentes, setContactosExistentes] = useState([]);
     const [misContactos, setMisContactos] = useState([]);
+    const [contactosEliminados, setContactosEliminados] = useState([]);
     const { getAccessTokenSilently } = useAuth0();
 
     const serverUrl = import.meta.env.VITE_SERVER_URL;
     const fetchContactos = async () => {
         try {
             const token = await getAccessTokenSilently();
-            console.log(user);
-            console.log(token);
+            
             // Solicitud para obtener todos los contactos existentes
             const responseExistentes = await axios.get(`${serverUrl}/users/`, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                    Authorization: `Bearer ${token}`,
                 }
             });
 
             setContactosExistentes(responseExistentes.data);
-            console.log("Usuarios existentes: ", responseExistentes.data);
-
 
             // Solicitud para obtener mis contactos solo si el usuario está autenticado
             if (isAuthenticated && user) {
                 const responseMisContactos = await axios.get(`${serverUrl}/contacts/user/${user.email}/`, {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                        Authorization: `Bearer ${token}`,
                     }
                 });
                 setMisContactos(responseMisContactos.data);
@@ -104,7 +46,7 @@ export default function MyContacts() {
         if (isAuthenticated) {
             fetchContactos();
         }
-    }, [isAuthenticated, user]); // Ejecutar cuando el usuario esté autenticado
+    }, [isAuthenticated, user]);
 
     const handleAddContact = async (contactData) => {
         try {
@@ -118,35 +60,65 @@ export default function MyContacts() {
                 },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                        Authorization: `Bearer ${token}`,
                     }
                 }
             );
 
-            // Actualizar misContactos localmente
-            const nuevoContacto = contactData; // Suponiendo que el servidor devuelve el contacto recién creado
-            setMisContactos((prevContacts) => [...prevContacts, nuevoContacto]);
+            // Actualizar localmente sin refresh
+            const newContact = {
+                ...contactData,
+                username: contactData.username || contactData.mail.split('@')[0]
+            };
+            setMisContactos(prevContacts => [...prevContacts, newContact]);
+            
+            // Eliminar de contactos eliminados si estaba ahí
+            setContactosEliminados(prevEliminados => 
+                prevEliminados.filter(c => c.mail !== contactData.mail)
+            );
 
-            console.log("Contacto creado y agregado:", nuevoContacto);
+            console.log("Contacto creado:", contactData);
         } catch (error) {
             console.error("Error al crear el contacto:", error);
         }
     };
 
-    const handleContactoClicked = (contactoClicked) => {
-        console.log("Contacto Clickeado:", contactoClicked);
+    const handleRemoveContact = async (contactToRemove) => {
+        try {
+            const token = await getAccessTokenSilently();
+            
+            // Eliminar en el backend
+            await axios.delete(`${serverUrl}/contacts/${user.email}/${contactToRemove.mail}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            // Actualizar localmente sin refresh
+            setMisContactos(prevContacts => 
+                prevContacts.filter(contact => contact.mail !== contactToRemove.mail)
+            );
+
+            // Añadir a contactos eliminados
+            setContactosEliminados(prevEliminados => [...prevEliminados, contactToRemove]);
+        } catch (error) {
+            console.error("Error al remover el contacto:", error);
+        }
     };
 
     return (
         <div>
             <Navbar />
             <div className="contacts-page-container">
-                <AddContactForm contactos={contactosExistentes}
+                <AddContactForm 
+                    contactos={contactosExistentes}
+                    contactosEliminados={contactosEliminados}
+                    misContactos={misContactos}
                     onContactAdded={handleAddContact}
-                    onRefresh={fetchContactos} />
-                <ContactField contactos={misContactos}
-                    onContactoClicked={handleContactoClicked}
-                    onRefresh={fetchContactos}
+                />
+                <ContactField 
+                    contactos={misContactos}
+                    onRemoveContact={handleRemoveContact}
                 />
             </div>
         </div>

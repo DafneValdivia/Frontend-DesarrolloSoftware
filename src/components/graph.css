@@ -1,0 +1,16 @@
+/* Estilos para centrar el SVG */
+.graph-container {
+    display: flex; /* Usamos Flexbox */
+    justify-content: center; /* Centrado horizontal */
+    align-items:last baseline; /* Centrado vertical */
+    height: 50vh; /* Ocupa toda la altura de la ventana */
+    margin: 10;
+    padding: 10;
+  }
+  
+  svg {
+    border: 1px solid #ddd; /* Borde opcional */
+    background-color: #fff; /* Fondo blanco */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra opcional */
+  }
+  

@@ -7,6 +7,7 @@ import MyContacts from './views/MyContacts';
 import GroupBalance from './views/GroupBalance';
 import Profile from './views/MyProfile';
 import ProtectedRoute from './ProtectedRoute';
+import DebtGraph from './components/graph';
 
 export default function Routing() {
     return (
@@ -45,6 +46,7 @@ export default function Routing() {
                 element={
                     <ProtectedRoute>
                         <GroupBalance />
+                        <DebtGraph />
                     </ProtectedRoute>
                 }
             />
