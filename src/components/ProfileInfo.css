@@ -92,3 +92,8 @@
     background-color: #c82333;
     transform: scale(1.05);
 }
+
+.error-message {
+    color: red;
+    font-size: 0.85em;
+}
