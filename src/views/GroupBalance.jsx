@@ -8,6 +8,7 @@ import axios from "axios";
 import { useAuth0 } from '@auth0/auth0-react';
 import PropTypes from 'prop-types';
 import { useParams, useLocation } from "react-router-dom";
+import InviteMemberPopUp from "../components/InviteMemberPopUp";
 import Select from "react-select";
 
 const GroupBalance = () => {
@@ -120,6 +121,56 @@ const GroupBalance = () => {
             console.error("Error al actualizar el estado:", error);
         }
     };
+
+    // Lógica add member
+    const [showAddMemberPopup, setShowAddMemberPopup] = useState(false); // Controla la visibilidad del popup
+    const [userContacts, setUserContacts] = useState([]); // Lista de contactos del usuario
+    const [invitedUserMail, setInvitedUserMail] = useState(""); // Correo del usuario a invitar
+    const [searchTerm, setSearchTerm] = useState(""); // Texto para filtrar contactos
+
+
+    // Función para abrir el popup y cargar contactos del usuario
+    const openAddMemberPopup = async () => {
+        setShowAddMemberPopup(true);
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/contacts/user/${user.email}`, {
+                withCredentials: true,
+            });
+            setUserContacts(response.data); // Guarda los contactos
+        } catch (error) {
+            console.error("Error al obtener contactos del usuario:", error);
+        }
+    };
+
+    // Función para cerrar el popup
+    const closeAddMemberPopup = () => {
+        setShowAddMemberPopup(false);
+        setInvitedUserMail(""); // Limpia el correo seleccionado
+    };
+
+    // Función para enviar la invitación
+    const sendInvitation = async () => {
+        try {
+            console.log("Enviando invitación a:", invitedUserMail);
+            console.log("ID del grupo:", groupId);
+            await axios.post(
+                `${import.meta.env.VITE_SERVER_URL}/groups/invitation`,
+                {
+                    invitedUserMail,
+                    groupId,
+                },
+                {
+                    withCredentials: true,
+                }
+            );
+            console.log("Invitación enviada correctamente");
+            closeAddMemberPopup(); // Cierra el popup
+        } catch (error) {
+            console.error("Error al enviar la invitación:", error);
+        }
+    };
+
+
     
 
     return (
@@ -407,6 +458,21 @@ const GroupBalance = () => {
                             ))}
                         </tbody>
                     </table>
+                    <div className="add-member-button-container">
+                        <button id="btn-add-member" onClick={openAddMemberPopup}>Añadir miembro</button>
+                    </div>
+                    {showAddMemberPopup && (
+                        <InviteMemberPopUp
+                            userContacts={userContacts}
+                            membersData={membersData}
+                            invitedUserMail={invitedUserMail}
+                            setInvitedUserMail={setInvitedUserMail}
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            sendInvitation={sendInvitation}
+                            closeAddMemberPopup={closeAddMemberPopup}
+                        />
+                    )}
                 </div>
             )}
 

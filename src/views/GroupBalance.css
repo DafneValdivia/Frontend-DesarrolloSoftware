@@ -114,3 +114,23 @@ th, td {
   .dropdown_state:focus{
     outline: none;
   }
+
+  #btn-add-member {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #ffa500; /* Color naranja */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+
+  #btn-add-member:hover {
+    background-color: #ff8c00; /* Color más oscuro al pasar el mouse */
+  }
+  .add-member-button-container {
+    text-align: right; /* Alinea el botón a la derecha */
+    margin-right: 10%;
+  }

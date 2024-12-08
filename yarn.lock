@@ -2285,7 +2285,7 @@ react-router@6.27.0:
 
 react-select@^5.8.3:
   version "5.8.3"
-  resolved "https://registry.npmjs.org/react-select/-/react-select-5.8.3.tgz"
+  resolved "https://registry.yarnpkg.com/react-select/-/react-select-5.8.3.tgz#64e89ad20a846348b18c6fbb395b939d0153ed74"
   integrity sha512-lVswnIq8/iTj1db7XCG74M/3fbGB6ZaluCzvwPGT5ZOjCdL/k0CLWhEK0vCBLuU5bHTEf6Gj8jtSvi+3v+tO1w==
   dependencies:
     "@babel/runtime" "^7.12.0"
