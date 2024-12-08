@@ -428,10 +428,7 @@ const GroupBalance = () => {
                             ))}
                         </tbody>
                     </table>
-                    <RoundButton
-                        onClick={setPopUp("on")}
-                        altText="Agregar deuda" // Texto alternativo
-                    />
+                    <RoundButton onClick={() => setPopUp("on")} altText="Agregar deuda" />
                     {/* <div>
                        <DebtGraph /> 
                     </div> */}

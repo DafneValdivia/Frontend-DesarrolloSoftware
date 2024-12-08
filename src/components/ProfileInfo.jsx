@@ -10,6 +10,8 @@ const ProfileInfo = () => {
     const [error, setError] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editData, setEditData] = useState({ username: '', phone: '' });
+    const [formErrors, setFormErrors] = useState({});
+    const [originalData, setOriginalData] = useState({ username: '', phone: '' });
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -19,11 +21,12 @@ const ProfileInfo = () => {
                 const token = await getAccessTokenSilently();
                 const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/users/${user.email}`, {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                        Authorization: `Bearer ${token}`,
                     }
                 });
                 setProfileData(response.data);
                 setEditData({ username: response.data.username, phone: response.data.phone });
+                setOriginalData({ username: response.data.username, phone: response.data.phone });
                 setLoading(false);
             } catch (err) {
                 setError("Error al obtener la información del perfil");
@@ -41,20 +44,52 @@ const ProfileInfo = () => {
         setEditData({ ...editData, [name]: value });
     };
 
+    const validateForm = () => {
+        const errors = {};
+
+        if (!editData.username.trim()) {
+            errors.username = "El nombre de usuario no puede estar vacío.";
+        } else if (!/[a-zA-Z]/.test(editData.username)) {
+            errors.username = "El nombre de usuario debe incluir al menos una letra.";
+        }
+
+        const phoneRegex = /^[0-9]*$/;
+        if (!editData.phone.trim()) {
+            errors.phone = "El número de teléfono no puede estar vacío.";
+        } else if (!phoneRegex.test(editData.phone)) {
+            errors.phone = "El número de teléfono solo puede contener números.";
+        } else if (editData.phone.length < 7 || editData.phone.length > 15) {
+            errors.phone = "El número de teléfono debe tener entre 7 y 15 dígitos.";
+        }
+
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const handleEditSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) return;
+
         try {
             const token = await getAccessTokenSilently();
             await axios.put(`${import.meta.env.VITE_SERVER_URL}/users/profile`, editData, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                    Authorization: `Bearer ${token}`,
                 }
             });
             setProfileData({ ...profileData, ...editData });
+            setOriginalData({ ...editData });
             setIsEditModalOpen(false);
         } catch (err) {
             setError("Error al actualizar el perfil");
         }
+    };
+
+    const handleCancelEdit = () => {
+        setEditData({ ...originalData }); // Restablece los campos de texto a los valores originales
+        setFormErrors({}); // Limpia los mensajes de error
+        setIsEditModalOpen(false); // Cierra el modal
     };
 
     if (loading) return <p>Cargando...</p>;
@@ -83,6 +118,7 @@ const ProfileInfo = () => {
                                     value={editData.username}
                                     onChange={handleEditChange}
                                 />
+                                {formErrors.username && <div className="error-message">{formErrors.username}</div>}
                             </label>
                             <label>
                                 Teléfono:
@@ -92,9 +128,10 @@ const ProfileInfo = () => {
                                     value={editData.phone}
                                     onChange={handleEditChange}
                                 />
+                                {formErrors.phone && <div className="error-message">{formErrors.phone}</div>}
                             </label>
                             <button type="submit">Guardar Cambios</button>
-                            <button type="button" onClick={() => setIsEditModalOpen(false)}>Cancelar</button>
+                            <button type="button" onClick={handleCancelEdit}>Cancelar</button>
                         </form>
                     </div>
                 </div>
