@@ -1,30 +1,61 @@
 import './App.css'
 import foto from './assets/fotoLanding.png'
-import axios from 'axios'
-import { useState } from 'react'
+import axios from 'axios';
 import NavBar from './components/Navbar'
+import { useAuth0 } from '@auth0/auth0-react'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react';
+import useAuthToken from './Auth/useAuthToken';
 
 function App() {
 
-  const [data, setData] = useState('')
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
+  const { token, error, fetchToken } = useAuthToken();
 
-  const handleButtonClick = async () => {
+  const checkNewUser = async () => {
     try {
-      const response = await axios.get('https://pudupay-backend.onrender.com')
-      // console.log(response.data)
-      setData(response.data)
-    } catch (error) {
-      console.error(error)
+      if (token) {
+        await axios.post(`${import.meta.env.VITE_SERVER_URL}/users/create`, {}, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+    }
+    catch (error) {
+      console.error("Error al registrar el usuario:", error);
     }
   }
 
+  const handleButtonClick = () => {
+    if (isAuthenticated) {
+      // Si está autenticado, redirige a /yourgroups
+      navigate('/yourgroups');
+    } else {
+      // Si no está autenticado, redirige al inicio de sesión
+      loginWithRedirect();
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const getTokenAndCheckUser = async () => {
+        await fetchToken();
+        checkNewUser();
+      };
+
+      getTokenAndCheckUser();
+    }
+  }, [isAuthenticated, fetchToken]);
+
   return (
     <>
-    <NavBar />
+      <NavBar />
       <div className='card'>
         <div className="left_card">
-        <h1>PuduPay</h1>
-        <h2>Divide y lleva la cuenta de gastos compartidos de la manera más fácil</h2>
+          <h1>PuduPay</h1>
+          <h2>Divide y lleva la cuenta de gastos compartidos de la manera más fácil</h2>
           <button className='boton_naranja' onClick={handleButtonClick}>
             Empieza ahora
           </button>
@@ -32,7 +63,6 @@ function App() {
         <div className='right_card'>
           <img src={foto} className="foto" alt="Foto" />
         </div>
-        <h2>{data}</h2>
       </div>
     </>
   )
