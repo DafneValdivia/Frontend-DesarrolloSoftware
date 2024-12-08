@@ -11,7 +11,7 @@ const BankDetails = () => {
         numeroDeCuenta: '',
         rut: '',
         nombre: '',
-        mail: '',
+        mail: user.email,
         tipoDeCuenta: '',
     });
     const [isEditing, setIsEditing] = useState(false);
@@ -55,7 +55,7 @@ const BankDetails = () => {
                 tipoDeCuenta: '',
             });
         } catch (err) {
-            setError('No se encontró datos bancarios');
+            setError('No se encontraron datos bancarios');
         }
     };
 
@@ -66,8 +66,6 @@ const BankDetails = () => {
     const handleEditChange = (e) => {
         const { name, value } = e.target;
         setEditData({ ...editData, [name]: value });
-
-        // Validar el campo modificado en tiempo real
         validateField(name, value);
     };
 
@@ -95,7 +93,7 @@ const BankDetails = () => {
                 if (!value) {
                     fieldErrors.rut = 'El RUT no puede estar vacío.';
                 } else if (!/^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$|^\d{7,8}-[\dkK]$/.test(value)) {
-                    fieldErrors.rut = 'El formato del RUT no es válido. incluír el guión.';
+                    fieldErrors.rut = 'El formato del RUT no es válido. Recuerde incluir el guión.';
                 } else {
                     delete fieldErrors.rut;
                 }
@@ -124,6 +122,12 @@ const BankDetails = () => {
     };
 
     const validateForm = () => {
+        const isEmptyForm = Object.values(editData).every((value) => value === '' || value === user.email);
+
+        if (isEmptyForm) {
+            return true;
+        }
+
         Object.keys(editData).forEach((field) => {
             validateField(field, editData[field]);
         });
@@ -147,6 +151,7 @@ const BankDetails = () => {
                     },
                 });
             } else {
+                console.log('Creating new bank data', editData);
                 await axios.post(`${serverUrl}/bankdata/create/${user.email}`, editData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -175,6 +180,31 @@ const BankDetails = () => {
         });
         setErrors({});
         setIsEditing(false);
+    };
+
+    const handleDelete = async () => {
+        if (window.confirm("¿Estás seguro de que quieres eliminar todos tus datos bancarios?")) {
+            try {
+                const token = await getAccessTokenSilently();
+                await axios.delete(`${serverUrl}/bankdata/${user.email}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setBankDetails(null);
+                setEditData({
+                    banco: '',
+                    numeroDeCuenta: '',
+                    rut: '',
+                    nombre: '',
+                    mail: user.email,
+                    tipoDeCuenta: '',
+                });
+                setIsEditing(false);
+            } catch (err) {
+                setError("Error al eliminar los datos bancarios");
+            }
+        }
     };
 
     return (
@@ -260,7 +290,18 @@ const BankDetails = () => {
                         <button type="button" onClick={handleCancel} className="cancel-button">Cancelar</button>
                     </div>
                 ) : (
-                    <button type="button" onClick={handleEdit} className="edit-button">Editar</button>
+                    <div className="button-group">
+                        <button type="button" onClick={handleEdit} className="edit-button">Editar</button>
+                        {bankDetails && (
+                            <button 
+                                type="button" 
+                                onClick={handleDelete} 
+                                className="delete-button"
+                            >
+                                Eliminar Datos Bancarios
+                            </button>
+                        )}
+                    </div>
                 )}
             </form>
         </div>
