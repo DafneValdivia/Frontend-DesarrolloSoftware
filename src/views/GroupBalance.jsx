@@ -223,6 +223,7 @@ const GroupBalance = () => {
     
         try {
             const token = await getAccessTokenSilently();
+            console.log("Access token:", token);
             await axios.delete(
                 `${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/member/${memberMail}`,
                 {
@@ -242,9 +243,10 @@ const GroupBalance = () => {
             setTimeout(() => setFeedbackMessage(null), 5000);
         } catch (error) {
             console.error("Error al eliminar miembro:", error);
+            const backendMessage = error.response?.data?.message || "Ocurrió un problema al intentar eliminar el miembro.";
     
             // Establece el mensaje de error
-            setFeedbackMessage(`Hubo un problema al eliminar el miembro con correo ${memberMail}.`);
+            setFeedbackMessage(backendMessage);
             setIsError(true); // Es un error
     
             // Limpia el mensaje después de 5 segundos
@@ -277,9 +279,10 @@ const GroupBalance = () => {
             }, 2000);
         } catch (error) {
             console.error("Error al salir del grupo:", error);
+            const backendMessage = error.response?.data?.message || "Ocurrió un problema al intentar salir del grupo.";
     
             // Muestra un mensaje de error
-            setFeedbackMessage("Ocurrió un problema al intentar salir del grupo.");
+            setFeedbackMessage(backendMessage);
             setIsError(true); // Es un error
     
             // Limpia el mensaje después de 5 segundos
