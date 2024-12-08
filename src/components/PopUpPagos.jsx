@@ -4,7 +4,7 @@ import './PopUp.css';
 import '../App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 
-export default function PopupPagos({ onClose, groupId }) {
+export default function PopupPagos({ onClose, groupId, balanceData }) {
   const [amount, setAmount] = useState("");
   const [groupMembers, setGroupMembers] = useState([]);
   const [users, setUsers] = useState([]); // Para almacenar los usuarios desde la API
@@ -32,11 +32,11 @@ export default function PopupPagos({ onClose, groupId }) {
           }
         });
         setUsers(usersResponse.data);
-        console.log(groupMembers);
-        console.log(users)
       } catch (error) {
         console.error("Error fetching data", error);
       }
+        console.log(`miembros: ${groupMembers}`);
+        console.log(`usuarios: ${users}`);
     };
 
     fetchGroupData();
@@ -57,57 +57,82 @@ export default function PopupPagos({ onClose, groupId }) {
       return false;
     }
 
-    const totalDebtAmount = debtDetails.reduce(
-      (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
-      0
-    );
-    if (totalDebtAmount !== Number(amount.replace(/\./g, ''))) {
-      alert("La suma de las deudas debe ser igual al monto total");
+    if (amount === "0"){
+      alert("Por favor ingrese un monto mayor a 0");
       return false;
     }
-    const allMembersSelected = debtDetails.every(debt => debt.id);
-    if (!allMembersSelected) {
-      alert("Debe seleccionar un deudor para cada detalle de deuda");
-      return false;
-    }
+
     return true;
   };
 
+
   const postData = async () => {
+
     if (!validateDebtDetails()) return;
 
     try {
-
       const creditor = groupMembers.find(member => member.member_id === selectedCreditor);
+            if (!creditor) {
+              alert("Error al identificar el prestador.");
+              return;
+            }
 
-      if (!creditor) {
-        alert("Error al identificar el prestador.");
-        return;
-      }
-
-      const userEmail = users.find(user => user.id === creditor.user_id)?.mail;
-
-      if (!userEmail) {
+      const creditorEmail = users.find(user => user.id === creditor.user_id)?.mail;
+      if (!creditorEmail) {
         alert("No se pudo encontrar el email del prestador.");
         return;
       }
 
+      const creditorName = users.find(user => user.id === creditor.user_id)?.username;
+      if (!creditorName) {
+        alert("No se pudo encontrar el nombre del prestador.");
+        return;
+      }
+
+      const debtorName = users.find(usuario => usuario.mail === user.email)?.username;
+            if (!debtorName) {
+              alert("Error al identificar tu nombre.");
+              return;
+            }
+
+      if (creditorEmail === user.email) {
+        alert("No puede seleccionarse a sí mismo como prestador");
+        return;
+      }
+
+      // Validar que el monto no exceda el balance
+      const balanceEntry = balanceData.find(
+        balance => balance.fromName === debtorName && balance.toName === creditorName
+      );
+
+      if (!balanceEntry) {
+        alert("No existe una deuda pendiente para el usuario seleccionado.");
+        return;
+      }
+
+      const maxAmount = balanceEntry.amount;
+      const paymentAmount = Number(amount.replace(/\./g, ''));
+      if (paymentAmount > maxAmount) {
+        alert(`El monto ingresado excede la deuda pendiente. Máximo permitido: $${maxAmount.toLocaleString("es-CL")}`);
+        return;
+      }
 
       const token = await getAccessTokenSilently();
-      await axios.post(`${serverUrl}/transactions/create`, {
+      await axios.post(`${serverUrl}/payments/create`, {
         groupId: groupId,
-        state: "No pagada",
-        amount: Number(amount.replace(/\./g, '')),
-        email: userEmail, // Email del prestador seleccionado
-        dueDate: "2024-12-31", // Ajustar la fecha de vencimiento según sea necesario
+        debtorMail:  user.email,
+        amount: paymentAmount,
+        creditorMail: creditorEmail,
       }, { headers: {
               Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
             }
        });
 
-      onClose();
+      //onClose();
+      alert("Pago ingresado con éxito")
     } catch (error) {
       console.error("Error al crear Transacciones", error);
+      alert("Ha ocurrido un error. Inténtelo nuevamente.")
     }
   };
 
