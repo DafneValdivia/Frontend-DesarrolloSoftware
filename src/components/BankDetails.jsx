@@ -1,16 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
+import './BankDetails.css';
 
 const BankDetails = () => {
     const { user, getAccessTokenSilently } = useAuth0();
-    const [bankDetails, setBankDetails] = useState(null); // Estado para los datos bancarios
-    const [editData, setEditData] = useState({ accountNumber: '', bankName: '', accountType: '' });
+    const [bankDetails, setBankDetails] = useState(null);
+    const [editData, setEditData] = useState({
+        banco: '',
+        numeroDeCuenta: '',
+        rut: '',
+        nombre: '',
+        mail: '',
+        tipoDeCuenta: '',
+    });
     const [isEditing, setIsEditing] = useState(false);
+    const [errors, setErrors] = useState({});
     const [error, setError] = useState(null);
     const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-    // Obtener datos bancarios del backend
+    const banks = [
+        'Banco Santander',
+        'Banco de Chile',
+        'BancoEstado',
+        'Scotiabank',
+        'BBVA',
+        'Itaú',
+        'BICE',
+        'HSBC',
+    ];
+
+    const accountTypes = [
+        'Cuenta Corriente',
+        'Cuenta Vista',
+        'Cuenta de Ahorro',
+        'Cuenta RUT',
+    ];
+
     const fetchBankDetails = async () => {
         try {
             const token = await getAccessTokenSilently();
@@ -20,10 +46,16 @@ const BankDetails = () => {
                 },
             });
             setBankDetails(response.data || null);
-            setEditData(response.data || { accountNumber: '', bankName: '', accountType: '' });
-            console.log(response.data);
+            setEditData(response.data || {
+                banco: '',
+                numeroDeCuenta: '',
+                rut: '',
+                nombre: '',
+                mail: user.email,
+                tipoDeCuenta: '',
+            });
         } catch (err) {
-            setError("Error al cargar los datos bancarios");
+            setError('No se encontró datos bancarios');
         }
     };
 
@@ -34,21 +66,97 @@ const BankDetails = () => {
     const handleEditChange = (e) => {
         const { name, value } = e.target;
         setEditData({ ...editData, [name]: value });
+
+        // Validar el campo modificado en tiempo real
+        validateField(name, value);
+    };
+
+    const validateField = (fieldName, value) => {
+        let fieldErrors = { ...errors };
+
+        switch (fieldName) {
+            case 'banco':
+                if (!value) {
+                    fieldErrors.banco = 'Debe seleccionar un banco.';
+                } else {
+                    delete fieldErrors.banco;
+                }
+                break;
+            case 'numeroDeCuenta':
+                if (!value) {
+                    fieldErrors.numeroDeCuenta = 'El número de cuenta no puede estar vacío.';
+                } else if (!/^\d+$/.test(value)) {
+                    fieldErrors.numeroDeCuenta = 'El número de cuenta solo puede contener números.';
+                } else {
+                    delete fieldErrors.numeroDeCuenta;
+                }
+                break;
+            case 'rut':
+                if (!value) {
+                    fieldErrors.rut = 'El RUT no puede estar vacío.';
+                } else if (!/^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$|^\d{7,8}-[\dkK]$/.test(value)) {
+                    fieldErrors.rut = 'El formato del RUT no es válido. incluír el guión.';
+                } else {
+                    delete fieldErrors.rut;
+                }
+                break;
+            case 'nombre':
+                if (!value) {
+                    fieldErrors.nombre = 'El nombre no puede estar vacío.';
+                } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
+                    fieldErrors.nombre = 'El nombre solo puede contener letras y espacios.';
+                } else {
+                    delete fieldErrors.nombre;
+                }
+                break;
+            case 'tipoDeCuenta':
+                if (!value) {
+                    fieldErrors.tipoDeCuenta = 'Debe seleccionar un tipo de cuenta.';
+                } else {
+                    delete fieldErrors.tipoDeCuenta;
+                }
+                break;
+            default:
+                break;
+        }
+
+        setErrors(fieldErrors);
+    };
+
+    const validateForm = () => {
+        Object.keys(editData).forEach((field) => {
+            validateField(field, editData[field]);
+        });
+
+        return Object.keys(errors).length === 0;
     };
 
     const handleSave = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             const token = await getAccessTokenSilently();
-            await axios.post(`${serverUrl}/bankdata`, editData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setBankDetails(editData); // Actualiza los datos bancarios
+            if (bankDetails) {
+                await axios.put(`${serverUrl}/bankdata/${user.email}`, editData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            } else {
+                await axios.post(`${serverUrl}/bankdata/create/${user.email}`, editData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            }
+            setBankDetails(editData);
             setIsEditing(false);
         } catch (err) {
-            setError("Error al guardar los datos bancarios");
+            setError('Error al guardar los datos bancarios');
         }
     };
 
@@ -57,7 +165,15 @@ const BankDetails = () => {
     };
 
     const handleCancel = () => {
-        setEditData(bankDetails || { accountNumber: '', bankName: '', accountType: '' });
+        setEditData(bankDetails || {
+            banco: '',
+            numeroDeCuenta: '',
+            rut: '',
+            nombre: '',
+            mail: user.email,
+            tipoDeCuenta: '',
+        });
+        setErrors({});
         setIsEditing(false);
     };
 
@@ -65,54 +181,88 @@ const BankDetails = () => {
         <div className="bank-details">
             <h3>Datos Bancarios</h3>
             {error && <p className="error">{error}</p>}
-            {isEditing ? (
-                <form onSubmit={handleSave}>
-                    <label>
-                        Número de Cuenta:
-                        <input
-                            type="text"
-                            name="accountNumber"
-                            value={editData.accountNumber}
-                            onChange={handleEditChange}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Nombre del Banco:
-                        <input
-                            type="text"
-                            name="bankName"
-                            value={editData.bankName}
-                            onChange={handleEditChange}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Tipo de Cuenta:
-                        <input
-                            type="text"
-                            name="accountType"
-                            value={editData.accountType}
-                            onChange={handleEditChange}
-                            required
-                        />
-                    </label>
-                    <button type="submit">Guardar</button>
-                    <button type="button" onClick={handleCancel}>Cancelar</button>
-                </form>
-            ) : bankDetails ? (
-                <div>
-                    <p><strong>Número de Cuenta:</strong> {bankDetails.accountNumber}</p>
-                    <p><strong>Nombre del Banco:</strong> {bankDetails.bankName}</p>
-                    <p><strong>Tipo de Cuenta:</strong> {bankDetails.accountType}</p>
-                    <button onClick={handleEdit}>Editar</button>
-                </div>
-            ) : (
-                <div>
-                    <p>No se han agregado datos bancarios.</p>
-                    <button onClick={handleEdit}>Agregar Datos</button>
-                </div>
-            )}
+            <form onSubmit={handleSave} className="bank-details-form">
+                <label>
+                    Banco:
+                    <select
+                        name="banco"
+                        value={editData.banco}
+                        onChange={handleEditChange}
+                        disabled={!isEditing}
+                        className={isEditing ? '' : 'readonly'}
+                    >
+                        <option value="">Seleccione un banco</option>
+                        {banks.map((bank, index) => (
+                            <option key={index} value={bank}>
+                                {bank}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.banco && <div className="error">{errors.banco}</div>}
+                </label>
+                <label>
+                    Número de Cuenta:
+                    <input
+                        type="text"
+                        name="numeroDeCuenta"
+                        value={editData.numeroDeCuenta}
+                        onChange={handleEditChange}
+                        disabled={!isEditing}
+                        className={isEditing ? '' : 'readonly'}
+                    />
+                    {errors.numeroDeCuenta && <div className="error">{errors.numeroDeCuenta}</div>}
+                </label>
+                <label>
+                    RUT:
+                    <input
+                        type="text"
+                        name="rut"
+                        value={editData.rut}
+                        onChange={handleEditChange}
+                        disabled={!isEditing}
+                        className={isEditing ? '' : 'readonly'}
+                    />
+                    {errors.rut && <div className="error">{errors.rut}</div>}
+                </label>
+                <label>
+                    Nombre:
+                    <input
+                        type="text"
+                        name="nombre"
+                        value={editData.nombre}
+                        onChange={handleEditChange}
+                        disabled={!isEditing}
+                        className={isEditing ? '' : 'readonly'}
+                    />
+                    {errors.nombre && <div className="error">{errors.nombre}</div>}
+                </label>
+                <label>
+                    Tipo de Cuenta:
+                    <select
+                        name="tipoDeCuenta"
+                        value={editData.tipoDeCuenta}
+                        onChange={handleEditChange}
+                        disabled={!isEditing}
+                        className={isEditing ? '' : 'readonly'}
+                    >
+                        <option value="">Seleccione un tipo de cuenta</option>
+                        {accountTypes.map((type, index) => (
+                            <option key={index} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.tipoDeCuenta && <div className="error">{errors.tipoDeCuenta}</div>}
+                </label>
+                {isEditing ? (
+                    <div className="button-group">
+                        <button type="submit" className="save-button">Guardar</button>
+                        <button type="button" onClick={handleCancel} className="cancel-button">Cancelar</button>
+                    </div>
+                ) : (
+                    <button type="button" onClick={handleEdit} className="edit-button">Editar</button>
+                )}
+            </form>
         </div>
     );
 };
