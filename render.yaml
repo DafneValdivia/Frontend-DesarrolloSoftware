@@ -1,0 +1,4 @@
+static:
+  handlers:
+    - src: /.*    # Captura todas las rutas
+      dest: /index.html
