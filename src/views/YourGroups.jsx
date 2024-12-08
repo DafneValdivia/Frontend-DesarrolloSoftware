@@ -91,7 +91,7 @@ export default function YourGroups() {
                         ))
                     ) : (
                         <div id="no-groups-message">
-                            <h2>No se encontraron grupos con ese nombre...</h2>
+                            <h2>No se encontraron grupos...</h2>
                         </div>
                     )}
                 </div>
