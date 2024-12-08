@@ -51,7 +51,9 @@ const GroupBalance = () => {
             setBalanceData(response_balance.data);
 
             const response_payments = await axios.get(`${import.meta.env.VITE_SERVER_URL}/payments/${groupId}`, {
-                withCredentials: true
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             })
             console.log("Pagos:", response_payments.data);
             setPaymentsData(response_payments.data);
@@ -162,8 +164,11 @@ const GroupBalance = () => {
     const openAddMemberPopup = async () => {
         setShowAddMemberPopup(true);
         try {
+            const token = await getAccessTokenSilently();
             const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/contacts/user/${user.email}`, {
-                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
             });
             setUserContacts(response.data); // Guarda los contactos
         } catch (error) {
@@ -180,6 +185,7 @@ const GroupBalance = () => {
     // Función para enviar la invitación
     const sendInvitation = async () => {
         try {
+            const token = await getAccessTokenSilently();
             console.log("Enviando invitación a:", invitedUserMail);
             console.log("ID del grupo:", groupId);
             await axios.post(
@@ -187,9 +193,10 @@ const GroupBalance = () => {
                 {
                     invitedUserMail,
                     groupId,
-                },
-                {
-                    withCredentials: true,
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                    }
                 }
             );
             console.log("Invitación enviada correctamente");
