@@ -137,11 +137,13 @@ const BankDetails = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
-
+    
+        setError(null); // Limpia cualquier error previo
+    
         if (!validateForm()) {
             return;
         }
-
+    
         try {
             const token = await getAccessTokenSilently();
             if (bankDetails) {
@@ -151,7 +153,6 @@ const BankDetails = () => {
                     },
                 });
             } else {
-                console.log('Creating new bank data', editData);
                 await axios.post(`${serverUrl}/bankdata/create/${user.email}`, editData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -160,15 +161,19 @@ const BankDetails = () => {
             }
             setBankDetails(editData);
             setIsEditing(false);
+            setError(null); // Limpia el mensaje de error en caso de éxito
         } catch (err) {
-            setError('Error al guardar los datos bancarios');
+            const errorMessage = err.response?.data?.message || 'Error al guardar los datos bancarios';
+            setError(errorMessage);
         }
     };
+    
 
     const handleEdit = () => {
+        setError(null); // Limpia cualquier mensaje de error previo al iniciar edición
         setIsEditing(true);
     };
-
+    
     const handleCancel = () => {
         setEditData(bankDetails || {
             banco: '',
@@ -179,9 +184,10 @@ const BankDetails = () => {
             tipoDeCuenta: '',
         });
         setErrors({});
+        setError(null); // Limpia el mensaje de error al cancelar
         setIsEditing(false);
     };
-
+    
     const handleDelete = async () => {
         if (window.confirm("¿Estás seguro de que quieres eliminar todos tus datos bancarios?")) {
             try {
@@ -207,11 +213,16 @@ const BankDetails = () => {
         }
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Evita que el formulario recargue la página
+      };
+    
+
     return (
         <div className="bank-details">
             <h3>Datos Bancarios</h3>
             {error && <p className="error">{error}</p>}
-            <form onSubmit={handleSave} className="bank-details-form">
+            <form onSubmit={handleSubmit} className="bank-details-form">
                 <label>
                     Banco:
                     <select
@@ -286,7 +297,7 @@ const BankDetails = () => {
                 </label>
                 {isEditing ? (
                     <div className="button-group">
-                        <button type="submit" className="save-button">Guardar</button>
+                        <button type="submit" onClick={handleSave} className="save-button">Guardar</button>
                         <button type="button" onClick={handleCancel} className="cancel-button">Cancelar</button>
                     </div>
                 ) : (

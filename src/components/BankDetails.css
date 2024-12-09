@@ -86,3 +86,8 @@
     margin-top: 10px;
     text-align: center;
 }
+
+.readonly {
+    background-color: #f9f9f9;
+    cursor: not-allowed;
+}
