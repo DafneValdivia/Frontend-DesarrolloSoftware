@@ -15,7 +15,7 @@ export default function TestComponents() {
                 <GroupCard 
                     key={group.id} 
                     groupName={group.groupName} 
-                    onClick={() => console.log(`Clicked on ${group.groupName}`)} 
+                    onClick={() => {}}
                 />
             ))}
         </div>
