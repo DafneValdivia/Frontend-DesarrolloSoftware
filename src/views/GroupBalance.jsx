@@ -380,18 +380,40 @@ const GroupBalance = () => {
                         </tbody>
                     </table>
                     <div>
-                        <button
-                            onClick={openAddMemberPopup}
-                            disabled={membersData.length >= 10}
-                            title={membersData.length >= 10 ? "No puedes añadir más de 10 miembros" : ""}
-                        >
-                            Añadir miembro
-                        </button>
-                        {successMessage && <div>{successMessage}</div>}
-                        {feedbackMessage && (
-                            <div className={isError ? "error" : "success"}>
-                                {feedbackMessage}
-                            </div>
+                        <div className="add-member-button-container">
+                            <button
+                                id="btn-add-member"
+                                onClick={openAddMemberPopup}
+                                disabled={membersData.length >= 10}
+                                title={membersData.length >= 10 ? "No puedes añadir más de 10 miembros" : ""}
+                            >
+                                Añadir miembro
+                            </button>
+                            {membersData.length >= 10 && (
+                            <p className="error-message">No puedes añadir más de 10 miembros al grupo.</p>
+                            )}
+                            {successMessage && (
+                                <div className="success-message">
+                                    {successMessage}
+                                </div>
+                            )}
+                            {feedbackMessage && (
+                                <div className={`feedback-message ${isError ? "error" : "success"}`}>
+                                    {feedbackMessage}
+                                </div>
+                            )}
+                        </div>
+                        {showAddMemberPopup && (
+                            <InviteMemberPopUp
+                                userContacts={userContacts}
+                                membersData={membersData}
+                                invitedUserMail={invitedUserMail}
+                                setInvitedUserMail={setInvitedUserMail}
+                                searchTerm={searchTerm}
+                                setSearchTerm={setSearchTerm}
+                                sendInvitation={sendInvitation}
+                                closeAddMemberPopup={closeAddMemberPopup}
+                            />
                         )}
                     </div>
                 </div>
