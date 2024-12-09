@@ -1,7 +1,7 @@
 // components/BankDetailsPopup.jsx
 import React from "react";
 import PropTypes from "prop-types";
-import "./BankDetailsPopup.css";
+import "./BankDetailsPopUp.css";
 
 const BankDetailsPopup = ({ member, bankDetails, onClose }) => {
     return (

@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
 import App from './App';
-import TestComponents from './views/TestComponents';
 import YourGroups from './views/YourGroups';
 import CreateGroup from './views/CreateGroup';
 import MyContacts from './views/MyContacts';
@@ -13,7 +12,6 @@ export default function Routing() {
         <Routes>
             {/* Rutas públicas */}
             <Route path="/" element={<App />} />
-            <Route path="/groupcard" element={<TestComponents />} />
 
             {/* Rutas protegidas */}
             <Route
