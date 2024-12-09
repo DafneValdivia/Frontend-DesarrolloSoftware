@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ProfileInfo from '../components/ProfileInfo';
 import InvitationField from '../components/InvitationField';
+import BankDetails from '../components/BankDetails'; // Importar el nuevo componente
 import './MyProfile.css';
 import Navbar from '../components/Navbar';
 import { useAuth0 } from "@auth0/auth0-react";
@@ -18,8 +19,8 @@ const Profile = () => {
             const email = user.email;
             const response = await axios.get(`${serverUrl}/invitations/${email}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
 
             const formattedData = response.data.map(({ invitation_id, group_id, group_name, invited_by }) => ({
@@ -39,6 +40,7 @@ const Profile = () => {
             fetchInvitations();
         }
     }, [isAuthenticated, user]);
+
 
     // Función para manejar la aceptación de una invitación
     const handleAccept = async (invitationId) => {
@@ -77,6 +79,7 @@ const Profile = () => {
             <Navbar />
             <div className="profile-container">
                 <ProfileInfo />
+                <BankDetails /> {/* Agregar el componente aquí */}
                 <InvitationField invitations={invitations} onAccept={handleAccept} onReject={handleReject} />
             </div>
         </div>

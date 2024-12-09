@@ -11,6 +11,7 @@ import { useParams, useLocation } from "react-router-dom";
 import PopupPagos from "../components/PopUpPagos";
 import InviteMemberPopUp from "../components/InviteMemberPopUp";
 import { useNavigate } from "react-router-dom";
+import BankDetailsPopup from "../components/BankDetailsPopUp";
 
 const GroupBalance = () => {
     const { id: groupId } = useParams(); // Obtiene 'id' de la URL como 'groupId'
@@ -60,18 +61,38 @@ const GroupBalance = () => {
             });
 
             const response_users = await axios.get(`${import.meta.env.VITE_SERVER_URL}/users`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+                }
+            })
+            console.log("Users:", response_users.data);
+            
 
-            const enrichedMembers = response_members.data.map((member) => {
-                const user = response_users.data.find((u) => u.id === member.user_id);
-                return {
-                    ...member,
-                    username: user?.username || "Desconocido",
-                    mail: user?.mail || "Sin correo",
-                    phone: user?.phone || "Sin número de teléfono",
-                };
-            });
+            // Asocia información de usuarios con los miembros
+            const enrichedMembers = await Promise.all(
+                response_members.data.map(async (member) => {
+                    const user = response_users.data.find((u) => u.id === member.user_id);
+                    let hasBankData = false;
+
+                    // Verifica si el usuario tiene datos bancarios
+                    try {
+                        const bankResponse = await axios.get(`${serverUrl}/bankdata/${user?.mail}`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        });
+                        hasBankData = !!bankResponse.data; // Verdadero si existen datos bancarios
+                    } catch {
+                        hasBankData = false;
+                    }
+
+                    return {
+                        ...member,
+                        username: user?.username || "Desconocido",
+                        mail: user?.mail || "Sin correo",
+                        phone: user?.phone || "Sin número de teléfono",
+                        hasBankData,
+                    };
+                })
+            );
 
             setMembersData(enrichedMembers);
         } catch (error) {
@@ -173,6 +194,33 @@ const GroupBalance = () => {
             setTimeout(() => setFeedbackMessage(null), 5000);
         }
     };
+
+    // Lógica ver datos bancarios
+    const [bankDetails, setBankDetails] = useState(null); // Datos bancarios del miembro seleccionado
+    const [selectedMember, setSelectedMember] = useState(null); // Miembro seleccionado para ver datos bancarios
+    const [showBankPopup, setShowBankPopup] = useState(false); // Controla la visibilidad del popup
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+    const handleViewBankDetails = async (member) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await axios.get(`${serverUrl}/bankdata/${member.mail}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setBankDetails(response.data);
+            setSelectedMember(member);
+            setShowBankPopup(true);
+        } catch (error) {
+            console.error("Error al obtener datos bancarios:", error);
+        }
+    };
+
+    const closeBankPopup = () => {
+        setShowBankPopup(false);
+        setBankDetails(null);
+        setSelectedMember(null);
+    };
+    
 
     return (
         <div>
@@ -291,7 +339,8 @@ const GroupBalance = () => {
                                 <th>Nombre de usuario</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
-                                <th>Acciones</th>
+                                <th>Datos bancarios</th>
+                                <th>Editar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -300,6 +349,15 @@ const GroupBalance = () => {
                                     <td>{member.username}</td>
                                     <td>{member.mail}</td>
                                     <td>{member.phone}</td>
+                                    <td>
+                                        <button
+                                            onClick={() => handleViewBankDetails(member)}
+                                            disabled={!member.hasBankData}
+                                            title={!member.hasBankData ? "Este miembro no tiene datos bancarios." : ""}
+                                        >
+                                            {member.hasBankData ? "Ver Datos" : "Sin Datos"}
+                                        </button>
+                                    </td>
                                     <td>
                                         {member.mail === user.email ? (
                                             <button
@@ -340,10 +398,19 @@ const GroupBalance = () => {
             )}
 
             {popUp && <Popup groupId={groupId} onClose={handlePopUpClose} />}
+
             {popUpPagos && <PopupPagos groupId={groupId} onClose={handlePopUpPagosClose} balanceData={balanceData} />}
-        </div>
-    );
-};
+            {showBankPopup && (
+                <BankDetailsPopup
+                    member={selectedMember}
+                    bankDetails={bankDetails}
+                    onClose={closeBankPopup}
+                />
+            )}
+
+        </div>)
+}
+
 
 GroupBalance.propTypes = {
     groupId: PropTypes.string.isRequired
