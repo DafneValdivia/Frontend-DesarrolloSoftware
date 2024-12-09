@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import GroupCard from "../components/GroupCard";
 import "./YourGroups.css";
@@ -61,6 +61,9 @@ export default function YourGroups() {
     const handleGroupCardClick = (groupId, groupName) => {
         navigate(`/group/${groupId}`, { state: { groupName } });
     };
+
+    if (loading) return <p>Cargando...</p>;
+    if (error) return <p>{error}</p>;
 
 
     return (
