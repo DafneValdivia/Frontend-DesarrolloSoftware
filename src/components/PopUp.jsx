@@ -8,35 +8,29 @@ export default function Popup({ onClose, groupId }) {
   const [titulo, setTitulo] = useState("");
   const [amount, setAmount] = useState("");
   const [groupMembers, setGroupMembers] = useState([]);
-  const [users, setUsers] = useState([]); // Para almacenar los usuarios desde la API
+  const [users, setUsers] = useState([]);
   const [selectedCreditor, setSelectedCreditor] = useState("");
   const [debtDetails, setDebtDetails] = useState([]);
-  const [divideEqually, setDivideEqually] = useState(false); // Estado para dividir en partes iguales
-  const [equalSplitDetails, setEqualSplitDetails] = useState([]); // Detalles del pago dividido
+  const [divideEqually, setDivideEqually] = useState(false);
+  const [equalSplitDetails, setEqualSplitDetails] = useState([]);
 
   const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0(); // Obtener el user_id del usuario autenticado
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
         const token = await getAccessTokenSilently();
-        const groupMembersResponse = await axios.get(`${serverUrl}/groups/${groupId}/members`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
-          }
+        const groupMembersResponse = await axios.get(`${serverUrl}/groups/members/${groupId}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
         setGroupMembers(groupMembersResponse.data);
 
         const usersResponse = await axios.get(`${serverUrl}/users`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
-          }
+          headers: { Authorization: `Bearer ${token}` }
         });
         setUsers(usersResponse.data);
-        console.log(groupMembers);
-        console.log(users)
       } catch (error) {
         console.error("Error fetching data", error);
       }
@@ -52,7 +46,7 @@ export default function Popup({ onClose, groupId }) {
   const updateDebtDetail = (index, field, value) => {
     if (field === 'amount') {
       const intValue = value.replace(/\./g, '').replace(/[^0-9]/g, '');
-      if (intValue.length > 7) return; // Límite de 7 dígitos
+      if (intValue.length > 7) return;
       const formattedValue = Number(intValue).toLocaleString("es-CL");
       const newDebtDetails = [...debtDetails];
       newDebtDetails[index][field] = formattedValue;
@@ -70,7 +64,7 @@ export default function Popup({ onClose, groupId }) {
 
   const handleAmountChange = (value) => {
     const intValue = value.replace(/\./g, '').replace(/[^0-9]/g, '');
-    if (intValue.length > 7) return; // Límite de 7 dígitos
+    if (intValue.length > 7) return;
     const formattedValue = Number(intValue).toLocaleString("es-CL");
     setAmount(formattedValue);
 
@@ -80,7 +74,7 @@ export default function Popup({ onClose, groupId }) {
   };
 
   const handleTitleChange = (value) => {
-    if (value.length > 20) return; // Límite de 20 caracteres
+    if (value.length > 20) return;
     setTitulo(value);
   };
 
@@ -88,28 +82,23 @@ export default function Popup({ onClose, groupId }) {
     const total = Number(totalAmount.replace(/\./g, ''));
     const allMembers = groupMembers;
     const numMembers = allMembers.length;
-  
+
     if (numMembers === 0) {
       setEqualSplitDetails([]);
       return;
     }
-  
-    const baseAmount = Math.ceil(total / numMembers); // Redondear hacia arriba
-  
-    // Generar los detalles de la división
+
+    const baseAmount = Math.ceil(total / numMembers);
+
     const splitDetails = allMembers.map((member) => ({
-      id: member.user_id, // Usar `user_id` para el estándar
+      id: member.user_id,
       name: member.username,
       amount: baseAmount.toLocaleString("es-CL")
     }));
-  
+
     setEqualSplitDetails(splitDetails);
-  
-    // Actualizar `debtDetails` con los IDs y montos
     setDebtDetails(splitDetails.map(({ id, amount }) => ({ id, amount })));
   };
-  
-  
 
   const handleCheckboxChange = (checked) => {
     setDivideEqually(checked);
@@ -127,40 +116,42 @@ export default function Popup({ onClose, groupId }) {
       alert("Todos los campos son obligatorios");
       return false;
     }
-
-    if (divideEqually) {
-      if (equalSplitDetails.length === 0) {
-        alert("No se puede dividir en partes iguales sin miembros.");
-        return false;
-      }
-      const totalSplitAmount = equalSplitDetails.reduce(
-        (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
-        0
-      );
-      return true;
-    }
-
-    const totalDebtAmount = debtDetails.reduce(
+  
+    const totalAssigned = debtDetails.reduce(
       (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
       0
     );
-    if (totalDebtAmount !== Number(amount.replace(/\./g, ''))) {
-      alert("La suma de las deudas debe ser igual al monto total");
-      return false;
+    const totalAmount = Number(amount.replace(/\./g, ''));
+  
+    if (!divideEqually) {
+      const remaining = totalAmount - totalAssigned;
+  
+      if (remaining < 0) {
+        alert("La suma de las deudas excede el monto total");
+        return false;
+      }
+  
+      if (totalAssigned + remaining !== totalAmount) {
+        alert("La suma de las deudas debe ser igual al monto total");
+        return false;
+      }
     }
+  
     const allMembersSelected = debtDetails.every(debt => debt.id);
     if (!allMembersSelected) {
       alert("Debe seleccionar un deudor para cada detalle de deuda");
       return false;
     }
+  
     return true;
   };
+  
+  
 
   const postData = async () => {
     if (!validateDebtDetails()) return;
 
     try {
-
       const creditor = groupMembers.find(member => member.member_id === selectedCreditor);
 
       if (!creditor) {
@@ -175,29 +166,37 @@ export default function Popup({ onClose, groupId }) {
         return;
       }
 
+      const totalAssigned = debtDetails.reduce(
+        (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
+        0
+      );
+      const totalAmount = Number(amount.replace(/\./g, ''));
+      const remaining = totalAmount - totalAssigned;
+
       const debtsArray = divideEqually 
         ? equalSplitDetails.map(debt => ({
             id: debt.id,
             amount: Number(debt.amount.replace(/\./g, ''))
           }))
-        : debtDetails.map(debt => ({
-            id: debt.id,
-            amount: Number(debt.amount.replace(/\./g, ''))
-          }));
+        : [
+            ...debtDetails.map(debt => ({
+              id: debt.id,
+              amount: Number(debt.amount.replace(/\./g, ''))
+            })),
+            ...(remaining > 0 ? [{
+              id: selectedCreditor,
+              amount: remaining
+            }] : [])
+          ];
 
       const token = await getAccessTokenSilently();
       await axios.post(`${serverUrl}/transactions/create`, {
         groupId: groupId,
         title: titulo,
-        state: "No pagada",
-        amount: Number(amount.replace(/\./g, '')),
-        email: userEmail, // Email del prestador seleccionado
-        dueDate: "2024-12-31", // Ajustar la fecha de vencimiento según sea necesario
+        amount: totalAmount,
+        email: userEmail,
         debtsArray: debtsArray
-      }, { headers: {
-              Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
-            }
-       });
+      }, { headers: { Authorization: `Bearer ${token}` } });
 
       onClose();
     } catch (error) {
@@ -206,11 +205,10 @@ export default function Popup({ onClose, groupId }) {
   };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-content">
+    <div className="popup-overlay-1">
+      <div className="popup-content-1">
         <h2>Ingresar nuevo gasto</h2>
-
-        <div className="popup-body">
+        <div className="popup-body-1">
           <label>Título del gasto</label>
           <input 
             type="text" 
@@ -266,7 +264,6 @@ export default function Popup({ onClose, groupId }) {
               </ul>
             </div>
           )}
-
           {!divideEqually && (
             <>
               <h3>Detalle de Deudas</h3>
@@ -276,12 +273,12 @@ export default function Popup({ onClose, groupId }) {
                     value={debt.id}
                     onChange={(e) => updateDebtDetail(index, 'id', e.target.value)}
                     className="input-field"
-                    placeholder="Seleccionar deudor"
                   >
+                    <option value="">Seleccionar...</option>
                     {groupMembers
                       .filter(member => 
-                        member.member_id !== selectedCreditor && 
-                        !debtDetails.some(d => d.id === member.user_id)
+                        member.member_id !== selectedCreditor &&
+                        !debtDetails.some(d => d.id === member.user_id && d.id !== debt.id)
                       )
                       .map(member => (
                         <option key={member.member_id} value={member.user_id}>
@@ -308,13 +305,37 @@ export default function Popup({ onClose, groupId }) {
                   </button>
                 </div>
               ))}
-
               <button 
                 onClick={handleAddDebtDetail} 
                 className="add-button"
               >
                 + Añadir Deuda
               </button>
+
+              {/* Mostrar deuda del prestador */}
+              <h3>Deuda del Prestador</h3>
+              {(() => {
+                const totalAssigned = debtDetails.reduce(
+                  (sum, debt) => sum + Number(debt.amount.replace(/\./g, '') || 0),
+                  0
+                );
+                const totalAmount = Number(amount.replace(/\./g, ''));
+                const remaining = totalAmount - totalAssigned;
+
+                if (remaining > 0) {
+                  const creditor = groupMembers.find(member => member.member_id === selectedCreditor);
+
+                  return (
+                    <div className="debt-detail">
+                      <p>
+                        {creditor?.username || "Prestador"} recibirá el monto restante de: $
+                        {remaining.toLocaleString("es-CL")}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
             </>
           )}
 

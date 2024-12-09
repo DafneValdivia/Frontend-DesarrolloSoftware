@@ -18,10 +18,6 @@ export default function YourGroups() {
 
     useEffect(() => {
         const fetchGroups = async () => {
-            console.log("Cargando grupos...");
-            console.log("Usuario autenticado:", isAuthenticated);
-            console.log("Usuario:", user);
-            console.log("Email:", user.email);
             try {
                 const token = await getAccessTokenSilently();
                 if (isAuthenticated && user) {
@@ -31,10 +27,8 @@ export default function YourGroups() {
                             Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
                         }
                     });
-                    console.log("Grupos cargados:", response.data);
                     setGroupsData(response.data);
                 } else {
-                    console.log("Usuario no autenticado");
                 }
                 setLoading(false);
             } catch (error) {

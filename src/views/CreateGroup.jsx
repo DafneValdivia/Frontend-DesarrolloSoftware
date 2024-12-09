@@ -26,7 +26,6 @@ export default function CreateGroup() {
                             Authorization: `Bearer ${token}`,
                         },
                     });
-                    console.log("Grupos cargados:", groupsResponse.data);
                     setGroupsData(groupsResponse.data);
 
                     // Obtener los contactos
@@ -36,7 +35,6 @@ export default function CreateGroup() {
                         },
                     });
                     setContactos(contactosResponse.data);
-                    console.log("Contactos obtenidos:", contactosResponse.data);
 
                     setLoading(false);
                 } catch (error) {
@@ -74,7 +72,6 @@ export default function CreateGroup() {
             );
 
             alert("Grupo creado exitosamente.");
-            console.log("Respuesta del backend:", response.data);
 
             // Actualiza los datos de los grupos localmente
             setGroupsData([...groupsData, response.data]);
