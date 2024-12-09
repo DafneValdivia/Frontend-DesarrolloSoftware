@@ -309,7 +309,6 @@ const GroupBalance = () => {
                 </div>
             )}
 
-
             {option === "pagos" && (
                 <div>
                     {paymentsData.length === 0 ? (
@@ -323,6 +322,7 @@ const GroupBalance = () => {
                                     <th>Monto</th>
                                     <th>Prestador</th>
                                 </tr>
+
                             </thead>
                             <tbody>
                                 {[...paymentsData].reverse().map((payment) => {
@@ -342,6 +342,7 @@ const GroupBalance = () => {
                         </table>
                     )}
                     <RoundButton onClick={() => setPopUpPagos("on")} altText="Agregar pago" />
+
                 </div>
             )}
 
