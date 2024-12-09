@@ -65,7 +65,6 @@ const GroupBalance = () => {
                     Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
                 }
             })
-            console.log("Users:", response_users.data);
             
 
             // Asocia información de usuarios con los miembros

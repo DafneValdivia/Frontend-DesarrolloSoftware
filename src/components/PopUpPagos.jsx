@@ -35,8 +35,6 @@ export default function PopupPagos({ onClose, groupId, balanceData }) {
       } catch (error) {
         console.error("Error fetching data", error);
       }
-        console.log(`miembros: ${groupMembers}`);
-        console.log(`usuarios: ${users}`);
     };
 
     fetchGroupData();

@@ -35,8 +35,6 @@ export default function Popup({ onClose, groupId }) {
           }
         });
         setUsers(usersResponse.data);
-        console.log(groupMembers);
-        console.log(users)
       } catch (error) {
         console.error("Error fetching data", error);
       }
