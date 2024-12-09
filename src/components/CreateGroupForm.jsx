@@ -23,7 +23,6 @@ const CreateGroupForm = ({ onGroupCreate, gruposExistentes }) => {
           },
         });
         setContactos(response.data);
-        console.log("Contactos obtenidos:", response.data);
       } catch (error) {
         console.error("Error fetching contacts:", error);
       }
@@ -124,7 +123,6 @@ const CreateGroupForm = ({ onGroupCreate, gruposExistentes }) => {
         invitedUsers: invitedUsers,
         email: user.email,
       };
-      console.log(requestBody);
       await axios.post(
         `${serverUrl}/groups/create`,
         requestBody,

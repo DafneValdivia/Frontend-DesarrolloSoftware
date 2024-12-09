@@ -76,7 +76,6 @@ export default function MyContacts() {
                 prevEliminados.filter(c => c.mail !== contactData.mail)
             );
 
-            console.log("Contacto creado:", contactData);
         } catch (error) {
             console.error("Error al crear el contacto:", error);
         }

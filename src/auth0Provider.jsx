@@ -8,8 +8,6 @@ const Auth0ProviderWithHistory = ({ children }) => {
   const callbackUrl = import.meta.env.VITE_AUTH0_CALLBACK_URL;
   const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
   const scope = import.meta.env.VITE_AUTH0_SCOPE;
-  // console.log(callbackUrl);
-  // console.log(window.location.origin);
 
   const navigate = useNavigate();
 
