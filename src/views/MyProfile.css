@@ -4,4 +4,6 @@
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
+    margin-left: 5%;
+    margin-right: 5%;
 }
