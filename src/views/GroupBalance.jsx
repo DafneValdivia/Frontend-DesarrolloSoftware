@@ -56,7 +56,7 @@ const GroupBalance = () => {
             });
             setPaymentsData(response_payments.data);
 
-            const response_members = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/${groupId}/members`, {
+            const response_members = await axios.get(`${import.meta.env.VITE_SERVER_URL}/groups/members/${groupId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -236,103 +236,121 @@ const GroupBalance = () => {
 
             {option === "balance" && (
                 <div>
-                    <div className="filters">
-                        <div className="filter">
-                            <label className="label_filter">Buscar Deudor:</label>
-                            <input
-                                type="text"
-                                placeholder="Ej. 1"
-                                value={searchDeudor}
-                                onChange={(e) => setSearchDeudor(e.target.value)}
-                            />
-                        </div>
-                        <div className="filter">
-                            <label className="label_filter">Buscar Prestador:</label>
-                            <input
-                                type="text"
-                                placeholder="Ej. Persona A"
-                                value={searchPrestador}
-                                onChange={(e) => setSearchPrestador(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                    {balanceData.length === 0 ? (
+                        <h2 className="no-dispo">No hay datos de balance disponibles</h2>
+                    ) : (
+                        <>
+                            <div className="filters">
+                                <div className="filter">
+                                    <label className="label_filter">Buscar Deudor:</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Ej. 1"
+                                        value={searchDeudor}
+                                        onChange={(e) => setSearchDeudor(e.target.value)}
+                                    />
+                                </div>
+                                <div className="filter">
+                                    <label className="label_filter">Buscar Prestador:</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Ej. Persona A"
+                                        value={searchPrestador}
+                                        onChange={(e) => setSearchPrestador(e.target.value)}
+                                    />
+                                </div>
+                            </div>
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Deudor</th>
-                                <th>Monto</th>
-                                <th>Prestador</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sortedBalances.map((deuda) => (
-                                <tr key={deuda.id}>
-                                    <td>{deuda.fromName || "Desconocido"}</td>
-                                    <td>{deuda.amount}</td>
-                                    <td>{deuda.toName || "Desconocido"}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Deudor</th>
+                                        <th>Monto</th>
+                                        <th>Prestador</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {sortedBalances.map((deuda) => (
+                                        <tr key={deuda.id}>
+                                            <td>{deuda.fromName || "Desconocido"}</td>
+                                            <td>{deuda.amount}</td>
+                                            <td>{deuda.toName || "Desconocido"}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </>
+                    )}
                     <RoundButton onClick={() => setPopUp("on")} altText="Agregar deuda" />
                 </div>
             )}
 
             {option === "historial" && (
                 <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Monto</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {transactions.map((transaccion) => (
-                                <tr key={transaccion.id}>
-                                    <td>{transaccion.title}</td>
-                                    <td>{transaccion.amount}</td>
+                    {transactions.length === 0 ? (
+                        <h2 className="no-dispo">No hay historial de gastos disponibles</h2>
+                    ) : (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Monto</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {transactions.map((transaccion) => (
+                                    <tr key={transaccion.id}>
+                                        <td>{transaccion.title}</td>
+                                        <td>{transaccion.amount}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             )}
 
+
             {option === "pagos" && (
                 <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Deudor</th>
-                                <th>Monto</th>
-                                <th>Prestador</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {paymentsData.map((payment) => {
-                                const debtor = membersData.find(member => member.member_id === payment.debtor_id);
-                                const creditor = membersData.find(member => member.member_id === payment.creditor_id);
-                                return (
-                                    <tr key={payment.id}>
-                                        <td>{new Date(payment.payment_date).toLocaleDateString()}</td>
-                                        <td>{debtor?.username || "Desconocido"}</td>
-                                        <td>{payment.amount}</td>
-                                        <td>{creditor?.username || "Desconocido"}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                    {paymentsData.length === 0 ? (
+                        <h2 className="no-dispo">No hay historial de pagos disponibles</h2>
+                    ) : (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Deudor</th>
+                                    <th>Monto</th>
+                                    <th>Prestador</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[...paymentsData].reverse().map((payment) => {
+                                    const debtor = membersData.find(member => member.member_id === payment.debtor_id);
+                                    const creditor = membersData.find(member => member.member_id === payment.creditor_id);
+
+                                    return (
+                                        <tr key={payment.id}>
+                                            <td>{new Date(payment.payment_date).toLocaleDateString()}</td>
+                                            <td>{debtor?.username || "Desconocido"}</td>
+                                            <td>{payment.amount}</td>
+                                            <td>{creditor?.username || "Desconocido"}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    )}
                     <RoundButton onClick={() => setPopUpPagos("on")} altText="Agregar pago" />
                 </div>
             )}
 
+
+
             {option === "detalles" && (
                 <div>
-                    <h2>Miembros del Grupo</h2>
+                    <h2 id="group-members">Miembros del Grupo</h2>
                     <table>
                         <thead>
                             <tr>

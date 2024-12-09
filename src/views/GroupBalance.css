@@ -208,3 +208,7 @@ th, td {
 .leave-button:hover {
     background-color: #cc8400; /* Naranja más oscuro */
 }
+
+.no-dispo {
+    text-align: center;
+}
